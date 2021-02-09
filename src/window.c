@@ -125,9 +125,9 @@ void InitMatrices()
     
 
     float cam_pos[3] = {4.0,3.0,-3.0};
-    float origin[3] = {0.0, 0.0, 0.0};
+    float target[3] = {1.0, 0.0, 0.0};
     float temp_y_axis[3] = {0.0, 1.0, 0.0};
-    float* view = lookAt(cam_pos, origin, temp_y_axis);
+    float* view = lookAt(cam_pos, target, temp_y_axis);
     memcpy(world_to_camera, view, 16 * sizeof(float));
 
     printf("\n view: \n");

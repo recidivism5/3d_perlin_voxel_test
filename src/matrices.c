@@ -69,6 +69,7 @@ float* lookAt(float cam_pos[3], float center[3], float up[3])
     s_normalized[2] = s[2] / s_magnitude;
 
     cross_product(s_normalized, F, u);
+    float u_magnitude = sqrt(u[0]*u[0] + u[1]*u[1] + u[2]*u[2]);
 
     //negate F
     F[0] = -F[0];
@@ -80,8 +81,14 @@ float* lookAt(float cam_pos[3], float center[3], float up[3])
     memcpy(&output[4], u, 3 * sizeof(float));
     memcpy(&output[8], F, 3 * sizeof(float));
     output[15] = 1.0f;
-    
-    output[11] = -F_magnitude;
+
+    float translation_matrix[16];
+    memcpy(translation_matrix, identity44, sizeof(identity44));
+    translation_matrix[3] = -cam_pos[0];
+    translation_matrix[7] = -cam_pos[1];
+    translation_matrix[11] = -cam_pos[2];
+
+    f_mult_mat44s(output, translation_matrix, output);
 
     return output;
 }
@@ -102,6 +109,25 @@ void update_OTW(float object_rot_about_x, float object_rot_about_y, float object
     object_to_world[7] = 0.0f;
     object_to_world[11] = 0.0f;
     object_to_world[15] = 1.0f;
+
+}
+
+void rt_matrix(float object_rot_about_x, float object_rot_about_y, float object_translation[3], float* output)
+{
+
+    rotate(y_axis, x_axis, object_rot_about_x, &output[4]);
+    rotate(z_axis, x_axis, object_rot_about_x, &output[8]);
+    
+    rotate(x_axis, y_axis, object_rot_about_y, &output[0]);
+    rotate(&output[4], y_axis, object_rot_about_y, &output[4]);
+    rotate(&output[8], y_axis, object_rot_about_y, &output[8]);
+
+    memcpy(&output[12], object_translation, 3 * sizeof(float));
+
+    output[3] = 0.0f;
+    output[7] = 0.0f;
+    output[11] = 0.0f;
+    output[15] = 1.0f;
 
 }
 
@@ -140,9 +166,16 @@ void make_perspective_projection_matrix(float fov_radians, float aspect_ratio, f
 
 void update_FM()
 {
-    f_mult_mat44s(object_to_world, world_to_camera, final_matrix);
 
-    printf("projection: \n");
+    float rotation_matrix[16];
+    float translation_temp[3] = {0.0, 0.0, 0.0};
+    rt_matrix(0.0f, 0.0f, translation_temp, rotation_matrix);
+
+    f_mult_mat44s(world_to_camera, rotation_matrix, world_to_camera);
+
+    f_mult_mat44s(perspective_proj, world_to_camera, final_matrix);
+
+    printf("\n perspective_proj \n");
     for (int i = 0; i < 16; i++)
     {
         if (i % 4 == 0)
@@ -150,30 +183,6 @@ void update_FM()
             putchar('\n');
         }
         printf("%f", perspective_proj[i]);
-        putchar(' ');
-    }
-
-    printf("m2w * w2c \n");
-    for (int i = 0; i < 16; i++)
-    {
-        if (i % 4 == 0)
-        {
-            putchar('\n');
-        }
-        printf("%f", final_matrix[i]);
-        putchar(' ');
-    }
-
-    f_mult_mat44s(perspective_proj, world_to_camera, final_matrix);
-
-    printf("\n m2w * w2c * persp \n");
-    for (int i = 0; i < 16; i++)
-    {
-        if (i % 4 == 0)
-        {
-            putchar('\n');
-        }
-        printf("%f", final_matrix[i]);
         putchar(' ');
     }
 }
