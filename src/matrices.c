@@ -133,14 +133,25 @@ void make_perspective_projection_matrix(float fov_radians, float aspect_ratio, f
     perspective_proj[5] = S;
 
     perspective_proj[10] = -far/(far-near);
-    perspective_proj[11] = -1.0f;
+    perspective_proj[14] = -1.0f;
 
-    perspective_proj[14] = -(far*near)/(far-near);
+    perspective_proj[11] = -(far*near)/(far-near);
 }
 
 void update_FM()
 {
     f_mult_mat44s(object_to_world, world_to_camera, final_matrix);
+
+    printf("projection: \n");
+    for (int i = 0; i < 16; i++)
+    {
+        if (i % 4 == 0)
+        {
+            putchar('\n');
+        }
+        printf("%f", perspective_proj[i]);
+        putchar(' ');
+    }
 
     printf("m2w * w2c \n");
     for (int i = 0; i < 16; i++)
@@ -153,7 +164,7 @@ void update_FM()
         putchar(' ');
     }
 
-    f_mult_mat44s(final_matrix, perspective_proj, final_matrix);
+    f_mult_mat44s(perspective_proj, world_to_camera, final_matrix);
 
     printf("\n m2w * w2c * persp \n");
     for (int i = 0; i < 16; i++)

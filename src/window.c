@@ -131,15 +131,15 @@ void InitMatrices()
     float cam_center[3] = {0.0f, 0.0f, -3.0f};
 
     update_OTW(0.0f, 0.0f, cube_center);
-    update_WTC(0.0f, 0.0f, cam_center);
-
+    
     make_perspective_projection_matrix(default_fov_radians, default_aspect_ratio, 0.1f, 100.0f);
 
-    update_FM();
+    
 
     float cam_pos[3] = {4.0,3.0,-3.0};
     float origin[3] = {0.0, 0.0, 0.0};
     float* view = lookAt(cam_pos, origin, y_axis);
+    memcpy(world_to_camera, view, 16 * sizeof(float));
 
     printf("\n view: \n");
     for (int i = 0; i < 16; i++)
@@ -152,6 +152,8 @@ void InitMatrices()
         putchar(' ');
     }
 
+    update_FM();
+
 }
 
 /*
@@ -159,10 +161,10 @@ void InitMatrices()
  */
 int Update()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.224f, 0.124f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUniformMatrix4fv(matrix_id, 1, GL_FALSE, identity44);
+    glUniformMatrix4fv(matrix_id, 1, GL_TRUE, final_matrix);
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);

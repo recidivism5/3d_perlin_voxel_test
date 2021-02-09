@@ -11,6 +11,7 @@ const float z_axis[3];
 
 float final_matrix[16];
 float identity44[16];
+float world_to_camera[16];
 
 void f_mult_mat44s(float* mat1, float* mat2, float* output);
 
