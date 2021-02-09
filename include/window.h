@@ -10,9 +10,9 @@
 SDL_Window    *m_window;
 SDL_GLContext  m_context;
 GLuint         vertex_array_id, vertex_buffer_id, color_buffer_id;
-GLuint         m_vert_shader;
-GLuint         m_frag_shader;
-GLuint         m_shader_prog;
+GLuint         vertex_shader_id;
+GLuint         fragment_shader_id;
+GLuint         shader_program_id;
 GLuint         matrix_id;
 
 extern const GLfloat verts[6][4];

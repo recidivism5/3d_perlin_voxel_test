@@ -68,7 +68,7 @@ int InitOpenGL()
 
     InitShaders();
 
-    matrix_id = glGetUniformLocation(m_shader_prog, "MVP");
+    matrix_id = glGetUniformLocation(shader_program_id, "MVP");
     
     glGenBuffers(1, &vertex_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
@@ -81,46 +81,34 @@ int InitOpenGL()
 
 int InitShaders()
 {
-    GLint status;
-    char err_buf[512];
+
+    vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
+    fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
 
     // Compile vertex shader
     char* vert_shader_src = read_shader_src("../src/shaders/vertex.glsl");
-    m_vert_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(m_vert_shader, 1, &vert_shader_src, NULL);
-    free(vert_shader_src);
-    glCompileShader(m_vert_shader);
-    glGetShaderiv(m_vert_shader, GL_COMPILE_STATUS, &status);
-    //Check compilation
-    if (status != GL_TRUE) {
-        glGetShaderInfoLog(m_vert_shader, sizeof(err_buf), NULL, err_buf);
-        err_buf[sizeof(err_buf)-1] = '\0';
-        fprintf(stderr, "Vertex shader compilation failed: %s\n", err_buf);
-        return 1;
-    }
+    glShaderSource(vertex_shader_id, 1, &vert_shader_src, NULL);
+    glCompileShader(vertex_shader_id);
 
     // Compile fragment shader
     char* frag_shader_src = read_shader_src("../src/shaders/frag.glsl");
-    m_frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(m_frag_shader, 1, &frag_shader_src, NULL);
-    free(frag_shader_src);
-    glCompileShader(m_frag_shader);
-    glGetShaderiv(m_frag_shader, GL_COMPILE_STATUS, &status);
-    //Check compilation
-    if (status != GL_TRUE) {
-        glGetShaderInfoLog(m_frag_shader, sizeof(err_buf), NULL, err_buf);
-        err_buf[sizeof(err_buf)-1] = '\0';
-        fprintf(stderr, "Fragment shader compilation failed: %s\n", err_buf);
-        return 1;
-    }
+    glShaderSource(fragment_shader_id, 1, &frag_shader_src, NULL);
+    glCompileShader(fragment_shader_id);
 
-    // Link vertex and fragment shaders
-    m_shader_prog = glCreateProgram();
-    glAttachShader(m_shader_prog, m_vert_shader);
-    glAttachShader(m_shader_prog, m_frag_shader);
+    //Link to program
+    shader_program_id = glCreateProgram();
+    glAttachShader(shader_program_id, vertex_shader_id);
+    glAttachShader(shader_program_id, fragment_shader_id);
+    glLinkProgram(shader_program_id);
 
-    glLinkProgram(m_shader_prog);
-    glUseProgram(m_shader_prog);
+    glDetachShader(shader_program_id, vertex_shader_id);
+    glDetachShader(shader_program_id, fragment_shader_id);
+
+    glDeleteShader(vertex_shader_id);
+    glDeleteShader(fragment_shader_id);
+
+    //Use program
+    glUseProgram(shader_program_id);
 
     return 0;
 }
@@ -138,7 +126,8 @@ void InitMatrices()
 
     float cam_pos[3] = {4.0,3.0,-3.0};
     float origin[3] = {0.0, 0.0, 0.0};
-    float* view = lookAt(cam_pos, origin, y_axis);
+    float temp_y_axis[3] = {0.0, 1.0, 0.0};
+    float* view = lookAt(cam_pos, origin, temp_y_axis);
     memcpy(world_to_camera, view, 16 * sizeof(float));
 
     printf("\n view: \n");
@@ -159,10 +148,17 @@ void InitMatrices()
 /*
  * Render a frame
  */
+
+GLfloat test_matrix[16] = {-0.431713, 0.000000, -0.575618, 0.000000, 
+                            -0.345371, 0.719522, 0.259028, 0.000000, 
+                            -0.686681, -0.515011, 0.515011, 5.736689, 
+                            -0.685994, -0.514496, 0.514496, 5.830952};
 int Update()
 {
     glClearColor(0.0f, 0.224f, 0.124f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glUseProgram(shader_program_id);
 
     glUniformMatrix4fv(matrix_id, 1, GL_TRUE, final_matrix);
 
@@ -187,7 +183,7 @@ int Cleanup()
 {
     glDeleteBuffers(1, &vertex_buffer_id);
     glDeleteBuffers(1, &color_buffer_id);
-    glDeleteProgram(m_shader_prog);
+    glDeleteProgram(shader_program_id);
     glDeleteVertexArrays(1, &vertex_array_id);
 
     SDL_GL_DeleteContext(m_context);
