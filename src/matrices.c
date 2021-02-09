@@ -76,7 +76,7 @@ float* lookAt(float cam_pos[3], float center[3], float up[3])
     F[2] = -F[2];
 
     static float output[16] = {0.0f};
-    memcpy(&output[0], s, 3 * sizeof(float));
+    memcpy(&output[0], s_normalized, 3 * sizeof(float));
     memcpy(&output[4], u, 3 * sizeof(float));
     memcpy(&output[8], F, 3 * sizeof(float));
     output[15] = 1.0f;
@@ -129,13 +129,13 @@ void update_WTC(float camera_rot_about_x, float camera_rot_about_y, float camera
 void make_perspective_projection_matrix(float fov_radians, float aspect_ratio, float near, float far)
 {
     float S = 1/tan(fov_radians/2);
-    perspective_proj[0] = S;
+    perspective_proj[0] = S/aspect_ratio;
     perspective_proj[5] = S;
 
     perspective_proj[10] = -far/(far-near);
     perspective_proj[14] = -1.0f;
 
-    perspective_proj[11] = -(far*near)/(far-near);
+    perspective_proj[11] = -(far*near)/(far-near) - near;
 }
 
 void update_FM()
