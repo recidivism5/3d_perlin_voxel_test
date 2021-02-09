@@ -5,6 +5,10 @@
 float default_aspect_ratio;
 float default_fov_radians;
 
+const float x_axis[3];
+const float y_axis[3];
+const float z_axis[3];
+
 float final_matrix[16];
 float identity44[16];
 

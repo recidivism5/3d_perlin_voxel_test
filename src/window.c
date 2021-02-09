@@ -137,6 +137,21 @@ void InitMatrices()
 
     update_FM();
 
+    float cam_pos[3] = {4.0,3.0,-3.0};
+    float origin[3] = {0.0, 0.0, 0.0};
+    float* view = lookAt(cam_pos, origin, y_axis);
+
+    printf("\n view: \n");
+    for (int i = 0; i < 16; i++)
+    {
+        if (i % 4 == 0)
+        {
+            putchar('\n');
+        }
+        printf("%f", view[i]);
+        putchar(' ');
+    }
+
 }
 
 /*
