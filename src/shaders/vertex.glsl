@@ -1,9 +1,20 @@
-#version 150 core
-in vec2 in_Position;
-in vec2 in_Texcoord;
-out vec2 Texcoord;
-void main()
-{
-    Texcoord = in_Texcoord;
-    gl_Position = vec4(in_Position, 0.0, 1.0);
+#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexColor;
+
+// Output data ; will be interpolated for each fragment.
+out vec3 fragmentColor;
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+
+void main(){	
+
+	// Output position of the vertex, in clip space : MVP * position
+	gl_Position = vec4(vertexPosition_modelspace,1.0) * MVP;
+
+	// The color of each vertex will be interpolated
+	// to produce the color of each fragment
+	fragmentColor = vertexColor;
 }

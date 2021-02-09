@@ -9,10 +9,10 @@ BIN = ../bin
 
 LIBS=-lm -lSDL2main -lSDL2 -lGLEW -lGL
 
-_DEPS = pipeline.h shader.h
+_DEPS = pipeline.h shader.h window.h cube.h quaternion.h matrices.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o pipeline.o shader.o
+_OBJ = main.o pipeline.o shader.o window.o cube.o quaternion.o matrices.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
