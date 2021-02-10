@@ -108,6 +108,25 @@ void rt_matrix(float object_rot_about_x, float object_rot_about_y, float object_
 
 }
 
+void rot_matrix(float rot_about_x, float rot_about_y, float* output)
+{
+    memcpy(output, identity44, sizeof(identity44));
+    rotate(y_axis, x_axis, rot_about_x, &output[4]);
+    rotate(z_axis, x_axis, rot_about_x, &output[8]);
+    
+    rotate(x_axis, y_axis, rot_about_y, &output[0]);
+    rotate(&output[4], y_axis, rot_about_y, &output[4]);
+    rotate(&output[8], y_axis, rot_about_y, &output[8]);
+}
+
+void column_major_trans_matrix(float translation[3], float* output)
+{
+    memcpy(output, identity44, sizeof(identity44));
+    output[3] = translation[0];
+    output[7] = translation[1];
+    output[11] = translation[2];
+}
+
 void make_perspective_projection_matrix(float fov_radians, float aspect_ratio, float near, float far, float* output)
 {
     float S = 1/tan(fov_radians/2);

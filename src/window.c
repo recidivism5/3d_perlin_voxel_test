@@ -1,12 +1,13 @@
 #include "window.h"
 
-float cam_pos[3] = {4.0f, 3.0f, -3.0f};
+float cam_pos[3] = {0.0f, 0.0f, -3.0f};
 float cam_rot_x = 0.0f;
 float cam_rot_y = 0.0f;
 
 int mouse_x = 0;
 int mouse_y = 0;
 const float MOUSE_MOTION_TO_THETA_RATE = 0.001;
+const float SPEED = 0.1;
 void update_mouse()
 {
     static int prev_mouse_x = 0;
@@ -31,6 +32,23 @@ void update_mouse()
     //update camera angle:
     cam_rot_y -= MOUSE_MOTION_TO_THETA_RATE * delta_mouse_x;
     cam_rot_x -= MOUSE_MOTION_TO_THETA_RATE * delta_mouse_y;
+
+}
+
+void move()
+{
+    if (move_direction == 1)
+    {
+        cam_pos[0] += SPEED * final_wtc[8];
+        cam_pos[1] += SPEED * final_wtc[9];
+        cam_pos[2] += SPEED * final_wtc[10];
+    }
+    else if (move_direction == -1)
+    {
+        cam_pos[0] -= SPEED * final_wtc[8];
+        cam_pos[1] -= SPEED * final_wtc[9];
+        cam_pos[2] -= SPEED * final_wtc[10];
+    }
 }
 
 int Initialize()
@@ -156,21 +174,18 @@ void InitMatrices()
     float target[3] = {1.0, 0.0, 0.0};
     float temp_y_axis[3] = {0.0, 1.0, 0.0};
     view = lookAt(cam_pos, target, temp_y_axis);
-    memcpy(world_to_camera, view, 16 * sizeof(float));
 
 }
 
 void UpdateMatrices()
 {
-    memcpy(world_to_camera, view, 16 * sizeof(float));
     static float camera_rotation_matrix[16];
-    rt_matrix(cam_rot_x, cam_rot_y, cam_pos, camera_rotation_matrix);
-
-    f_mult_mat44s(camera_rotation_matrix, world_to_camera, world_to_camera);
-
-    f_mult_mat44s(world_to_camera, model_to_world, world_to_camera);
-
-    f_mult_mat44s(perspective_proj, world_to_camera, final_matrix);
+    rot_matrix(cam_rot_x, cam_rot_y, camera_rotation_matrix);
+    static float camera_column_trans[16];
+    column_major_trans_matrix(cam_pos, camera_column_trans);
+    
+    f_mult_mat44s(camera_rotation_matrix, camera_column_trans, final_wtc);
+    f_mult_mat44s(perspective_proj, final_wtc, final_matrix);
 
 }
 
@@ -182,6 +197,7 @@ int Update()
 {
 
     update_mouse();
+    move();
 
     UpdateMatrices();
 

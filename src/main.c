@@ -36,7 +36,32 @@ int main(int argc, char *argv[])
                 should_run = 0;
                 break;
             }
+            else if (event.type == SDL_KEYDOWN)
+            {
+                switch (event.key.keysym.sym)
+                {
+                    case SDLK_w:
+                    move_direction = 1;
+                    break;
+                    
+                    case SDLK_s:
+                    move_direction = -1;
+                    break;
+                }
+            }
+            else if (event.type == SDL_KEYUP)
+            {
+                switch (event.key.keysym.sym)
+                {
+                    case SDLK_w:
+                    move_direction = 0;
+                    break;
 
+                    case SDLK_s:
+                    move_direction = 0;
+                    break;
+                }
+            }
         }
 
         if (timer_diff > FRAME_TIME){
