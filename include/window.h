@@ -15,9 +15,14 @@ GLuint         fragment_shader_id;
 GLuint         shader_program_id;
 GLuint         matrix_id;
 
-extern const GLfloat verts[6][4];
+float cam_pos[3];
+float cam_rot_x;
+float cam_rot_y;
 
-extern const GLint indicies[];
+float model_to_world[16];
+float world_to_camera[16];
+float perspective_proj[16];
+float final_matrix[16];
 
 int Initialize();
 int Update();
@@ -25,4 +30,5 @@ int Cleanup();
 int InitOpenGL();
 int InitShaders();
 void InitMatrices();
+void UpdateMatrices();
 int InitTextures();

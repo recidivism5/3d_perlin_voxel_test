@@ -1,5 +1,38 @@
 #include "window.h"
 
+float cam_pos[3] = {4.0f, 3.0f, -3.0f};
+float cam_rot_x = 0.0f;
+float cam_rot_y = 0.0f;
+
+int mouse_x = 0;
+int mouse_y = 0;
+const float MOUSE_MOTION_TO_THETA_RATE = 0.001;
+void update_mouse()
+{
+    static int prev_mouse_x = 0;
+    static int prev_mouse_y = 0;
+    static int delta_mouse_x = 0;
+    static int delta_mouse_y = 0;
+    static int start_flag = 0;
+
+    SDL_GetRelativeMouseState(&mouse_x, &mouse_y);
+    if (start_flag)
+    {
+        delta_mouse_x = mouse_x - prev_mouse_x;
+        delta_mouse_y = mouse_y - prev_mouse_y;
+    }
+    else
+    {
+        start_flag = 1;
+    }
+    
+    SDL_GetRelativeMouseState(&prev_mouse_x, &prev_mouse_y);
+
+    //update camera angle:
+    cam_rot_y += MOUSE_MOTION_TO_THETA_RATE * delta_mouse_x;
+    cam_rot_x -= MOUSE_MOTION_TO_THETA_RATE * delta_mouse_y;
+}
+
 int Initialize()
 {
     // Initialize SDL Video
@@ -115,33 +148,24 @@ int InitShaders()
 
 void InitMatrices()
 {
-    float cube_center[3] = {0.0f, 0.0f, 0.0f};
-    float cam_center[3] = {0.0f, 0.0f, -3.0f};
+    float translation_temp[3] = {0.0, 0.0, 0.0};
+    rt_matrix(0.0f, 0.0f, translation_temp, model_to_world);
 
-    update_OTW(0.0f, 0.0f, cube_center);
-    
-    make_perspective_projection_matrix(default_fov_radians, default_aspect_ratio, 0.1f, 100.0f);
+    make_perspective_projection_matrix(default_fov_radians, default_aspect_ratio, 0.1f, 100.0f, perspective_proj);
 
-    
-
-    float cam_pos[3] = {4.0,3.0,-3.0};
     float target[3] = {1.0, 0.0, 0.0};
     float temp_y_axis[3] = {0.0, 1.0, 0.0};
     float* view = lookAt(cam_pos, target, temp_y_axis);
     memcpy(world_to_camera, view, 16 * sizeof(float));
 
-    printf("\n view: \n");
-    for (int i = 0; i < 16; i++)
-    {
-        if (i % 4 == 0)
-        {
-            putchar('\n');
-        }
-        printf("%f", view[i]);
-        putchar(' ');
-    }
+}
 
-    update_FM();
+void UpdateMatrices()
+{
+
+    f_mult_mat44s(world_to_camera, model_to_world, world_to_camera);
+
+    f_mult_mat44s(perspective_proj, world_to_camera, final_matrix);
 
 }
 
@@ -149,12 +173,13 @@ void InitMatrices()
  * Render a frame
  */
 
-GLfloat test_matrix[16] = {-0.431713, 0.000000, -0.575618, 0.000000, 
-                            -0.345371, 0.719522, 0.259028, 0.000000, 
-                            -0.686681, -0.515011, 0.515011, 5.736689, 
-                            -0.685994, -0.514496, 0.514496, 5.830952};
 int Update()
 {
+
+    update_mouse();
+
+    UpdateMatrices();
+
     glClearColor(0.0f, 0.224f, 0.124f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
