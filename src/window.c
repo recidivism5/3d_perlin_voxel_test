@@ -29,7 +29,7 @@ void update_mouse()
     SDL_GetRelativeMouseState(&prev_mouse_x, &prev_mouse_y);
 
     //update camera angle:
-    cam_rot_y += MOUSE_MOTION_TO_THETA_RATE * delta_mouse_x;
+    cam_rot_y -= MOUSE_MOTION_TO_THETA_RATE * delta_mouse_x;
     cam_rot_x -= MOUSE_MOTION_TO_THETA_RATE * delta_mouse_y;
 }
 
@@ -155,13 +155,18 @@ void InitMatrices()
 
     float target[3] = {1.0, 0.0, 0.0};
     float temp_y_axis[3] = {0.0, 1.0, 0.0};
-    float* view = lookAt(cam_pos, target, temp_y_axis);
+    view = lookAt(cam_pos, target, temp_y_axis);
     memcpy(world_to_camera, view, 16 * sizeof(float));
 
 }
 
 void UpdateMatrices()
 {
+    memcpy(world_to_camera, view, 16 * sizeof(float));
+    static float camera_rotation_matrix[16];
+    rt_matrix(cam_rot_x, cam_rot_y, cam_pos, camera_rotation_matrix);
+
+    f_mult_mat44s(camera_rotation_matrix, world_to_camera, world_to_camera);
 
     f_mult_mat44s(world_to_camera, model_to_world, world_to_camera);
 

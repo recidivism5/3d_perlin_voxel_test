@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     double timer_diff = ((double) (timer_end - timer_start)) / CLOCKS_PER_SEC;
 
     static const float FRAME_TIME = 1/FPS;
+    SDL_SetRelativeMouseMode(SDL_TRUE);
 
     printf("Running...\n");
     for (should_run = 1; should_run; ) {
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
                 should_run = 0;
                 break;
             }
-            
+
         }
 
         if (timer_diff > FRAME_TIME){

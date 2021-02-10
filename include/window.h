@@ -19,6 +19,7 @@ float cam_pos[3];
 float cam_rot_x;
 float cam_rot_y;
 
+float* view;
 float model_to_world[16];
 float world_to_camera[16];
 float perspective_proj[16];
