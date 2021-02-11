@@ -25,6 +25,7 @@ float world_to_camera[16];
 float final_wtc[16];
 float perspective_proj[16];
 float final_matrix[16];
+float final_matrix_2[16];
 
 int Initialize();
 int Update();

@@ -199,6 +199,15 @@ void UpdateMatrices()
     f_mult_mat44s(camera_rotation_matrix, camera_column_trans, final_wtc);
     f_mult_mat44s(perspective_proj, final_wtc, final_matrix);
 
+    static float scale_matrix[16];
+    static float scale_factor = 40.0f;
+    memcpy(scale_matrix, identity44, sizeof(identity44));
+    scale_matrix[0] *= scale_factor;
+    scale_matrix[5] *= scale_factor;
+    scale_matrix[10] *= scale_factor;
+
+    f_mult_mat44s(final_wtc, scale_matrix, final_matrix_2);
+    f_mult_mat44s(perspective_proj, final_matrix_2, final_matrix_2);
 
 }
 
@@ -228,6 +237,10 @@ int Update()
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_id);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+
+    glUniformMatrix4fv(matrix_id, 1, GL_TRUE, final_matrix_2);
 
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
