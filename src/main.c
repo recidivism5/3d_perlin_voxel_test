@@ -47,6 +47,14 @@ int main(int argc, char *argv[])
                     case SDLK_s:
                     move_direction = -1;
                     break;
+
+                    case SDLK_d:
+                    move_direction = 2;
+                    break;
+                    
+                    case SDLK_a:
+                    move_direction = -2;
+                    break;
                 }
             }
             else if (event.type == SDL_KEYUP)
@@ -58,6 +66,14 @@ int main(int argc, char *argv[])
                     break;
 
                     case SDLK_s:
+                    move_direction = 0;
+                    break;
+
+                    case SDLK_d:
+                    move_direction = 0;
+                    break;
+                    
+                    case SDLK_a:
                     move_direction = 0;
                     break;
                 }

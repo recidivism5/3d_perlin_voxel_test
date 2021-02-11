@@ -49,6 +49,18 @@ void move()
         cam_pos[1] -= SPEED * final_wtc[9];
         cam_pos[2] -= SPEED * final_wtc[10];
     }
+    if (move_direction == 2)
+    {
+        cam_pos[0] -= SPEED * final_wtc[0];
+        cam_pos[1] -= SPEED * final_wtc[1];
+        cam_pos[2] -= SPEED * final_wtc[2];
+    }
+    else if (move_direction == -2)
+    {
+        cam_pos[0] += SPEED * final_wtc[0];
+        cam_pos[1] += SPEED * final_wtc[1];
+        cam_pos[2] += SPEED * final_wtc[2];
+    }
 }
 
 int Initialize()
