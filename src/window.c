@@ -179,7 +179,7 @@ int InitShaders()
 void InitMatrices()
 {
     float translation_temp[3] = {0.0, 0.0, 0.0};
-    rt_matrix(0.0f, 0.0f, translation_temp, model_to_world);
+    rot_matrix(1.0f, 0.0f, model_to_world);
 
     make_perspective_projection_matrix(default_fov_radians, default_aspect_ratio, 0.1f, 100.0f, perspective_proj);
 
@@ -208,6 +208,7 @@ void UpdateMatrices()
 
     f_mult_mat44s(final_wtc, scale_matrix, final_matrix_2);
     f_mult_mat44s(perspective_proj, final_matrix_2, final_matrix_2);
+    f_mult_mat44s(final_matrix_2, model_to_world, final_matrix_2);
 
 }
 
