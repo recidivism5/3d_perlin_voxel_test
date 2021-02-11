@@ -76,7 +76,7 @@ int Initialize()
         "SDL App",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        640, 480,
+        1920, 1080,
         SDL_WINDOW_OPENGL);
     if (m_window == NULL) {
         fprintf(stderr, "Failed to create main window\n");

@@ -25,7 +25,7 @@ void f_mult_mat44s(float* mat1_in, float* mat2_in, float* output){
     output[15] = mat1[12] * mat2[3] + mat1[13] * mat2[7] + mat1[14] * mat2[11] + mat1[15] * mat2[15];
 }
 
-float default_aspect_ratio = 4.0f/3.0f;
+float default_aspect_ratio = 16.0f/9.0f;
 float default_fov_radians = 1.745329;
 
 const float x_axis[3] = {1.0f, 0.0f, 0.0f};
