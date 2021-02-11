@@ -37,25 +37,25 @@ void update_mouse()
 
 void move()
 {
-    if (move_direction == 1)
+    if (move_direction_z == 1)
     {
         cam_pos[0] += SPEED * final_wtc[8];
         cam_pos[1] += SPEED * final_wtc[9];
         cam_pos[2] += SPEED * final_wtc[10];
     }
-    else if (move_direction == -1)
+    else if (move_direction_z == -1)
     {
         cam_pos[0] -= SPEED * final_wtc[8];
         cam_pos[1] -= SPEED * final_wtc[9];
         cam_pos[2] -= SPEED * final_wtc[10];
     }
-    if (move_direction == 2)
+    if (move_direction_x == 1)
     {
         cam_pos[0] -= SPEED * final_wtc[0];
         cam_pos[1] -= SPEED * final_wtc[1];
         cam_pos[2] -= SPEED * final_wtc[2];
     }
-    else if (move_direction == -2)
+    else if (move_direction_x == -1)
     {
         cam_pos[0] += SPEED * final_wtc[0];
         cam_pos[1] += SPEED * final_wtc[1];
@@ -198,6 +198,7 @@ void UpdateMatrices()
     
     f_mult_mat44s(camera_rotation_matrix, camera_column_trans, final_wtc);
     f_mult_mat44s(perspective_proj, final_wtc, final_matrix);
+
 
 }
 

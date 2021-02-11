@@ -41,19 +41,19 @@ int main(int argc, char *argv[])
                 switch (event.key.keysym.sym)
                 {
                     case SDLK_w:
-                    move_direction = 1;
+                    move_direction_z = 1;
                     break;
                     
                     case SDLK_s:
-                    move_direction = -1;
+                    move_direction_z = -1;
                     break;
 
                     case SDLK_d:
-                    move_direction = 2;
+                    move_direction_x = 1;
                     break;
                     
                     case SDLK_a:
-                    move_direction = -2;
+                    move_direction_x = -1;
                     break;
                 }
             }
@@ -62,19 +62,19 @@ int main(int argc, char *argv[])
                 switch (event.key.keysym.sym)
                 {
                     case SDLK_w:
-                    move_direction = 0;
+                    move_direction_z = 0;
                     break;
 
                     case SDLK_s:
-                    move_direction = 0;
+                    move_direction_z = 0;
                     break;
 
                     case SDLK_d:
-                    move_direction = 0;
+                    move_direction_x = 0;
                     break;
                     
                     case SDLK_a:
-                    move_direction = 0;
+                    move_direction_x = 0;
                     break;
                 }
             }

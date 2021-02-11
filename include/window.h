@@ -35,5 +35,6 @@ void InitMatrices();
 void UpdateMatrices();
 int InitTextures();
 
-int move_direction;
+int move_direction_z;
+int move_direction_x;
 void move();
