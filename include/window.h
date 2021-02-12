@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "cube.h"
 #include "matrices.h"
+#include "texture.h"
 
 SDL_Window    *m_window;
 SDL_GLContext  m_context;
@@ -16,6 +17,7 @@ GLuint         matrix_ids[2];
 GLuint         texture_ids[1];
 
 GLuint         textures[1];
+GLuint         uv_buffers[1];
 
 float cam_pos[3];
 float cam_rot_x;

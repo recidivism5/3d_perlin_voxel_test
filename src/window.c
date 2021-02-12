@@ -116,6 +116,8 @@ int Initialize()
 
     InitOpenGL();
 
+    InitTextures();
+
     InitMatrices();
 
     return 0;
@@ -142,6 +144,17 @@ int InitOpenGL()
     glGenBuffers(1, &color_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cube_color_data), cube_color_data, GL_STATIC_DRAW);
+}
+
+int InitTextures()
+{
+    textures[0] = loadDDS("../res/tex/jojdxt1.dds");
+	
+	texture_ids[0]  = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
+
+    glGenBuffers(1, &uv_buffers[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_uv_data), cube_uv_data, GL_STATIC_DRAW);
 }
 
 void InitMatrices()
