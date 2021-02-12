@@ -148,7 +148,7 @@ int InitOpenGL()
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/uvtemplate.dds");
+    textures[0] = loadDDS("../res/tex/mj256mip3.dds");
 	
 	texture_ids[0]  = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
 

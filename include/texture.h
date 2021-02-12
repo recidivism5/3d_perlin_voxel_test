@@ -5,4 +5,4 @@
 #include <GL/glew.h>
 
 // Load a .DDS file
-GLuint loadDDS(const char * imagepath);
+GLuint loadDDS(const char* path);
