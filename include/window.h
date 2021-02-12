@@ -10,10 +10,12 @@
 SDL_Window    *m_window;
 SDL_GLContext  m_context;
 GLuint         vertex_array_id, vertex_buffer_id, color_buffer_id;
-GLuint         vertex_shader_id;
-GLuint         fragment_shader_id;
+
 GLuint         shader_program_ids[2];
-GLuint         matrix_id;
+GLuint         matrix_ids[2];
+GLuint         texture_ids[1];
+
+GLuint         textures[1];
 
 float cam_pos[3];
 float cam_rot_x;
