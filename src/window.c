@@ -148,13 +148,28 @@ int InitShaderProgram(GLuint* program_id, char* name)
     vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
     fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
 
+    static char base_path[] = "../src/shaders/";
+    static char end_path_vert[] = "_vert.glsl";
+    static char end_path_frag[] = "_frag.glsl";
+
+    char* final_path = malloc(sizeof(base_path)+sizeof(end_path_vert)+sizeof(name));
+
     // Compile vertex shader
-    char* vert_shader_src = read_shader_src("../src/shaders/vertex.glsl");
+    memcpy(&final_path[0], base_path, sizeof(base_path));
+    memcpy(&final_path[15], name, sizeof(name)+1);
+    memcpy(&final_path[16+sizeof(name)], end_path_vert, sizeof(end_path_vert));
+    printf("\n building %s", final_path);
+
+    char* vert_shader_src = read_shader_src(final_path);
     glShaderSource(vertex_shader_id, 1, &vert_shader_src, NULL);
     glCompileShader(vertex_shader_id);
 
     // Compile fragment shader
-    char* frag_shader_src = read_shader_src("../src/shaders/frag.glsl");
+    memcpy(&final_path[16+sizeof(name)], end_path_frag, sizeof(end_path_frag));
+    printf("\n building %s", final_path);
+    printf("\n");
+
+    char* frag_shader_src = read_shader_src(final_path);
     glShaderSource(fragment_shader_id, 1, &frag_shader_src, NULL);
     glCompileShader(fragment_shader_id);
 
