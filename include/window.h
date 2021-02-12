@@ -12,7 +12,7 @@ SDL_GLContext  m_context;
 GLuint         vertex_array_id, vertex_buffer_id, color_buffer_id;
 GLuint         vertex_shader_id;
 GLuint         fragment_shader_id;
-GLuint         shader_program_id;
+GLuint         shader_program_ids[2];
 GLuint         matrix_id;
 
 float cam_pos[3];
@@ -31,7 +31,7 @@ int Initialize();
 int Update();
 int Cleanup();
 int InitOpenGL();
-int InitShaders();
+int InitShaderProgram(GLuint* program_id, char* name);
 void InitMatrices();
 void UpdateMatrices();
 int InitTextures();

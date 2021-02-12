@@ -3,7 +3,9 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/include/**"
+                "${workspaceFolder}/include/**",
+                "C:/Users/destr/Documents/coding/C/Libs/SDL2-2.0.14/x86_64-w64-mingw32/include/**",
+                "C:/Users/destr/Documents/coding/C/Libs/glew-2.1.0/include/**"
             ],
             "defines": [
                 "_DEBUG",

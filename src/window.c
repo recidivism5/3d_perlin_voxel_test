@@ -129,9 +129,9 @@ int InitOpenGL()
     glGenVertexArrays(1, &vertex_array_id);
     glBindVertexArray(vertex_array_id);
 
-    InitShaders();
+    InitShaderProgram(&shader_program_ids[0], "tutorial4");
 
-    matrix_id = glGetUniformLocation(shader_program_id, "MVP");
+    matrix_id = glGetUniformLocation(shader_program_ids[0], "MVP");
     
     glGenBuffers(1, &vertex_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
@@ -142,7 +142,7 @@ int InitOpenGL()
     glBufferData(GL_ARRAY_BUFFER, sizeof(cube_color_data), cube_color_data, GL_STATIC_DRAW);
 }
 
-int InitShaders()
+int InitShaderProgram(GLuint* program_id, char* name)
 {
 
     vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
@@ -159,19 +159,19 @@ int InitShaders()
     glCompileShader(fragment_shader_id);
 
     //Link to program
-    shader_program_id = glCreateProgram();
-    glAttachShader(shader_program_id, vertex_shader_id);
-    glAttachShader(shader_program_id, fragment_shader_id);
-    glLinkProgram(shader_program_id);
+    *program_id = glCreateProgram();
+    glAttachShader(*program_id, vertex_shader_id);
+    glAttachShader(*program_id, fragment_shader_id);
+    glLinkProgram(*program_id);
 
-    glDetachShader(shader_program_id, vertex_shader_id);
-    glDetachShader(shader_program_id, fragment_shader_id);
+    glDetachShader(*program_id, vertex_shader_id);
+    glDetachShader(*program_id, fragment_shader_id);
 
     glDeleteShader(vertex_shader_id);
     glDeleteShader(fragment_shader_id);
 
     //Use program
-    glUseProgram(shader_program_id);
+    glUseProgram(*program_id);
 
     return 0;
 }
@@ -227,7 +227,7 @@ int Update()
     glClearColor(0.0f, 0.224f, 0.124f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(shader_program_id);
+    glUseProgram(shader_program_ids[0]);
 
     glUniformMatrix4fv(matrix_id, 1, GL_TRUE, final_matrix);
 
@@ -256,7 +256,7 @@ int Cleanup()
 {
     glDeleteBuffers(1, &vertex_buffer_id);
     glDeleteBuffers(1, &color_buffer_id);
-    glDeleteProgram(shader_program_id);
+    glDeleteProgram(shader_program_ids[0]);
     glDeleteVertexArrays(1, &vertex_array_id);
 
     SDL_GL_DeleteContext(m_context);
