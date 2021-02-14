@@ -160,7 +160,8 @@ int InitTextures()
 void InitMatrices()
 {
     float translation_temp[3] = {0.0, 0.0, 0.0};
-    rot_matrix(1.0f, 0.0f, model_to_world);
+
+    rot_matrix(0.0f, 0.0f, model_to_world);
 
     make_perspective_projection_matrix(default_fov_radians, default_aspect_ratio, 0.1f, 100.0f, perspective_proj);
 
@@ -172,6 +173,16 @@ void InitMatrices()
 
 void UpdateMatrices()
 {
+    static float x_rot = 0.0f;
+    static float y_rot = 0.0f;
+    if (x_rot > 2*M_PI) x_rot = 0.0f;
+    else x_rot += 0.01f;
+    if (y_rot > 2*M_PI) y_rot = 0.0f;
+    else y_rot += 0.01f;
+    rot_matrix(x_rot, y_rot, model_to_world);
+    static float rotation_inverse[16];
+    rot_matrix(-x_rot, -y_rot*3, rotation_inverse);
+
     static float camera_rotation_matrix[16];
     rot_matrix(cam_rot_x, cam_rot_y, camera_rotation_matrix);
     static float camera_column_trans[16];
@@ -179,6 +190,7 @@ void UpdateMatrices()
     
     f_mult_mat44s(camera_rotation_matrix, camera_column_trans, final_wtc);
     f_mult_mat44s(perspective_proj, final_wtc, final_matrix);
+    f_mult_mat44s(final_matrix, rotation_inverse, final_matrix);
 
     static float scale_matrix[16];
     static float scale_factor = 40.0f;
@@ -220,7 +232,7 @@ int Update()
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_id);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+    //glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
     glUniformMatrix4fv(matrix_ids[0], 1, GL_TRUE, final_matrix_2);
 
@@ -244,6 +256,9 @@ int Update()
     glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+
+    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix);
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
     glDisableVertexAttribArray(0);
