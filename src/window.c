@@ -148,7 +148,7 @@ int InitOpenGL()
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/mj256mip3.dds");
+    textures[0] = loadDDS("../res/tex/jojdxt1.dds");
 	
 	texture_ids[0]  = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
 
@@ -220,18 +220,18 @@ int Update()
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_id);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-    //glDrawArrays(GL_TRIANGLES, 0, 12*3);
+    glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
     glUniformMatrix4fv(matrix_ids[0], 1, GL_TRUE, final_matrix_2);
 
-    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+    //glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
 
     //JOJ region:
     glUseProgram(shader_program_ids[1]);
-    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix);
+    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix_2);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glUniform1i(texture_ids[0], 0);
