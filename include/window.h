@@ -30,6 +30,7 @@ float final_wtc[16];
 float perspective_proj[16];
 float final_matrix[16];
 float final_matrix_2[16];
+float final_matrix_3[16];
 
 int Initialize();
 int Update();

@@ -148,7 +148,7 @@ int InitOpenGL()
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/jojdxt1.dds");
+    textures[0] = loadDDS("../res/tex/mj256.dds");
 	
 	texture_ids[0]  = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
 
@@ -193,7 +193,8 @@ void UpdateMatrices()
     f_mult_mat44s(final_matrix, rotation_inverse, final_matrix);
 
     static float scale_matrix[16];
-    static float scale_factor = 40.0f;
+    static float scale_factor;
+    scale_factor = 400.0f;
     memcpy(scale_matrix, identity44, sizeof(identity44));
     scale_matrix[0] *= scale_factor;
     scale_matrix[5] *= scale_factor;
@@ -201,7 +202,16 @@ void UpdateMatrices()
 
     f_mult_mat44s(final_wtc, scale_matrix, final_matrix_2);
     f_mult_mat44s(perspective_proj, final_matrix_2, final_matrix_2);
-    f_mult_mat44s(final_matrix_2, model_to_world, final_matrix_2);
+    f_mult_mat44s(final_matrix_2, rotation_inverse, final_matrix_2);
+
+    scale_factor = 20.0f;
+    memcpy(scale_matrix, identity44, sizeof(identity44));
+    scale_matrix[0] *= scale_factor;
+    scale_matrix[5] *= scale_factor;
+    scale_matrix[10] *= scale_factor;
+    f_mult_mat44s(final_wtc, scale_matrix, final_matrix_3);
+    f_mult_mat44s(perspective_proj, final_matrix_3, final_matrix_3);
+    f_mult_mat44s(final_matrix_3, model_to_world, final_matrix_3);
 
 }
 
@@ -259,6 +269,9 @@ int Update()
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
     glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix);
+    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+
+    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix_3);
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
     glDisableVertexAttribArray(0);
