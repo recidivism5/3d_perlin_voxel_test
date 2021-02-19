@@ -1,0 +1,1 @@
+int meme_hash(unsigned int x);

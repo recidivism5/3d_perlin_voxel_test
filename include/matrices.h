@@ -17,6 +17,7 @@ void cross_product(float vec1[3], float vec2[3], float* output);
 float* lookAt(float cam_pos[3], float center[3], float up[3]);
 
 void rt_matrix(float object_rot_about_x, float object_rot_about_y, float object_translation[3], float* output);
+void cmt_matrix(float i_offset, float j_offset, float k_offset, float* output);
 
 void rot_matrix(float rot_about_x, float rot_about_y, float* output);
 void column_major_trans_matrix(float translation[3], float* output);

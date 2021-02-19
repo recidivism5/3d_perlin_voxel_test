@@ -120,6 +120,8 @@ int Initialize()
 
     InitMatrices();
 
+    SeedWorld(4);
+
     return 0;
 }
 
@@ -148,7 +150,7 @@ int InitOpenGL()
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/mj256.dds");
+    textures[0] = loadDDS("../res/tex/mj256mip3.dds");
 	
 	texture_ids[0]  = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
 
@@ -163,7 +165,7 @@ void InitMatrices()
 
     rot_matrix(0.0f, 0.0f, model_to_world);
 
-    make_perspective_projection_matrix(default_fov_radians, default_aspect_ratio, 0.1f, 100.0f, perspective_proj);
+    make_perspective_projection_matrix(default_fov_radians, default_aspect_ratio, 0.1f, 500.0f, perspective_proj);
 
     float target[3] = {1.0, 0.0, 0.0};
     float temp_y_axis[3] = {0.0, 1.0, 0.0};
@@ -175,10 +177,7 @@ void UpdateMatrices()
 {
     static float x_rot = 0.0f;
     static float y_rot = 0.0f;
-    if (x_rot > 2*M_PI) x_rot = 0.0f;
-    else x_rot += 0.01f;
-    if (y_rot > 2*M_PI) y_rot = 0.0f;
-    else y_rot += 0.01f;
+    
     rot_matrix(x_rot, y_rot, model_to_world);
     static float rotation_inverse[16];
     rot_matrix(-x_rot, -y_rot*3, rotation_inverse);
@@ -194,17 +193,20 @@ void UpdateMatrices()
 
     static float scale_matrix[16];
     static float scale_factor;
-    scale_factor = 400.0f;
+    scale_factor = 0.5f;
     memcpy(scale_matrix, identity44, sizeof(identity44));
     scale_matrix[0] *= scale_factor;
     scale_matrix[5] *= scale_factor;
     scale_matrix[10] *= scale_factor;
 
+    static float test_trans[16];
+    cmt_matrix(5.0f, 0.0f, 0.0f, test_trans);
     f_mult_mat44s(final_wtc, scale_matrix, final_matrix_2);
     f_mult_mat44s(perspective_proj, final_matrix_2, final_matrix_2);
     f_mult_mat44s(final_matrix_2, rotation_inverse, final_matrix_2);
+    f_mult_mat44s(final_matrix_2, test_trans, final_matrix_2);
 
-    scale_factor = 20.0f;
+    scale_factor = 50.5f;
     memcpy(scale_matrix, identity44, sizeof(identity44));
     scale_matrix[0] *= scale_factor;
     scale_matrix[5] *= scale_factor;
@@ -271,14 +273,35 @@ int Update()
     glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix);
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
-    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix_3);
-    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+    world_draw();
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
 
     SDL_GL_SwapWindow(m_window);
     return 0;
+}
+
+void world_draw()
+{
+    static float chunk_cube_draw_matrix[16];
+    static float cc_trans[16];
+    for (float k = 0; k < 16; k++)
+    {
+        for (float j = 0; j < 16; j++)
+        {
+            for (float i = 0; i < 16; i++)
+            {
+                cmt_matrix(i, j, k, cc_trans);
+                f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
+                glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
+                if (meme_hash((unsigned int)256*k + 16*j + i))
+                {
+                    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+                }
+            }
+        }
+    }
 }
 
 int Cleanup()

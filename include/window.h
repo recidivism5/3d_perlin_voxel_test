@@ -7,6 +7,8 @@
 #include "cube.h"
 #include "matrices.h"
 #include "texture.h"
+#include "world.h"
+#include "hash.h"
 
 SDL_Window    *m_window;
 SDL_GLContext  m_context;
@@ -40,6 +42,8 @@ int InitShaderProgram(GLuint* program_id, char* name);
 void InitMatrices();
 void UpdateMatrices();
 int InitTextures();
+
+void world_draw();
 
 int move_direction_z;
 int move_direction_x;

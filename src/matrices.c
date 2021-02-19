@@ -108,6 +108,14 @@ void rt_matrix(float object_rot_about_x, float object_rot_about_y, float object_
 
 }
 
+void cmt_matrix(float i_offset, float j_offset, float k_offset, float* output)
+{
+    memcpy(output, identity44, sizeof(identity44));
+    output[3] = i_offset;
+    output[7] = j_offset;
+    output[11] = k_offset;
+}
+
 void rot_matrix(float rot_about_x, float rot_about_y, float* output)
 {
     memcpy(output, identity44, sizeof(identity44));
