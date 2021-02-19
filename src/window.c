@@ -295,9 +295,12 @@ void world_draw()
                 cmt_matrix(i, j, k, cc_trans);
                 f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
                 glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
-                if (meme_hash((unsigned int)256*k + 16*j + i))
+                if (sqrt((i-8) * (i-8) + (j-8)*(j-8) + (k-8)*(k-8)) < 16)
                 {
-                    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+                    if (gen3DPerlinValue(i, j, k, 32.0f) > 0.15)
+                    {
+                        glDrawArrays(GL_TRIANGLES, 0, 12*3);
+                    }
                 }
             }
         }

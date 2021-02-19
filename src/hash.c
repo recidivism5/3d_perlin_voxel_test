@@ -17,8 +17,105 @@ int hash_array[256] = {151,160,137,91,90,15,
     138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
 };
 
+float perlin_gradient_vector_table[72] = {1,1,0,      -1,1,0,
+                                        1,-1,0,     -1,-1,0,
+                                        1,0,1,      -1,0,1,
+                                        1,0,-1,     -1,0,-1,
+                                        0,1,1,       0,-1,1,
+                                        0,1,-1,      0,-1,-1,
+
+                                        1,1,0,      -1,1,0,
+                                        1,-1,0,     -1,-1,0,
+                                        1,0,1,      -1,0,1,
+                                        1,0,-1,     -1,0,-1,
+                                        0,1,1,       0,-1,1,
+                                        0,1,-1,      0,-1,-1};
+
+float dot_product_3d(float* v1, float* v2)
+{
+    return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+}
+
+void subtract_vec3(float* v1, float* v2, float* o)
+{
+    static float v1_copy[3];
+    memcpy(&v1_copy, v1, sizeof(v1_copy)); 
+    static float v2_copy[3];
+    memcpy(&v2_copy, v2, sizeof(v2_copy));
+
+    o[0] = v1_copy[0] - v2_copy[0];
+    o[1] = v1_copy[1] - v2_copy[1];
+    o[2] = v1_copy[2] - v2_copy[2];
+}
+
+float cube_corners[24] = {0,0,0,  1,0,0,  1,1,0,  0,1,0,
+                        0,0,1,  1,0,1,  1,1,1,  0,1,1};
+
+float fade(float a)
+{
+    return 6*a*a*a*a*a - 15*a*a*a*a + 10*a*a*a;
+}
+
+float gen3DPerlinValue(int i, int j, int k, float cube_size)
+{
+    static float n_i;
+    static float n_j;
+    static float n_k;
+    
+    static int cs_i;
+    cs_i = (int)cube_size;
+
+    n_i = (i % cs_i)/cube_size;
+    n_j = (j % cs_i)/cube_size;
+    n_k = (k % cs_i)/cube_size;
+
+    static int vec_table_index;
+    vec_table_index = (meme_hash((unsigned int)(i+j+k)) % 12) * 3;
+    static float gradient_vectors[3*8];
+    memcpy(gradient_vectors, &perlin_gradient_vector_table[vec_table_index], sizeof(gradient_vectors));
+    
+    static float normalized_position[3];
+    normalized_position[0] = n_i;
+    normalized_position[1] = n_j;
+    normalized_position[2] = n_k;
+
+    static float distance_vectors[3*8];
+    for (int p = 0; p < 8; p++)
+    {
+        subtract_vec3(normalized_position, &cube_corners[p*3], &distance_vectors[p*3]);
+    }
+
+    static float dots[8];
+    for (int p = 0; p < 8; p++)
+    {
+        dots[p] = dot_product_3d(&gradient_vectors[p*3], &distance_vectors[p*3]);
+    }
+
+    static float AB;
+    static float CD;
+    static float EF;
+    static float GH;
+    static float M;
+    static float N;
+    static float fn_i;
+    static float fn_j;
+    fn_i = fade(n_i);
+    fn_j = fade(n_j);
+
+    AB = dots[0] + fn_i*(dots[1]-dots[0]);
+    CD = dots[2] + fn_i*(dots[3]-dots[2]);
+    EF = dots[4] + fn_i*(dots[5]-dots[4]);
+    GH = dots[6] + fn_i*(dots[7]-dots[6]);
+
+    M = AB + fn_j*(CD-AB);
+    N = EF + fn_j*(GH-EF);
+
+    return M + fade(n_k)*(N-M);
+    
+
+}
+
 int meme_hash(unsigned int x) {
     if (x % 255 > 0) x = x % 255;
-    if (33 > hash_array[x]) return 1;
-    else return 0;
+    return hash_array[x];
 }
