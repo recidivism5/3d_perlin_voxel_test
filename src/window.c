@@ -150,7 +150,7 @@ int InitOpenGL()
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/mj256mip3.dds");
+    textures[0] = loadDDS("../res/tex/mj256mip3.DDS");
 	
 	texture_ids[0]  = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
 
@@ -284,6 +284,15 @@ int Update()
 
 int perlin_period = 4;
 float perlin_cutoff = 0.2f;
+
+int perlinTest(float i, float j, float k, float gi, float gj, float gk)
+{
+    if (noise3(i/perlin_period + gi*32, j/perlin_period + gj*32, k/perlin_period + gk*32) > perlin_cutoff)
+    { return 1;}
+    else
+    { return 0;}
+}
+
 void world_draw()
 {
     static float chunk_cube_draw_matrix[16];
@@ -302,16 +311,29 @@ void world_draw()
                     for (float j = 0; j < 32; j++)
                     {
                         for (float i = 0; i < 32; i++)
-                        {
-                            cmt_matrix(gi*32, gj*32, gk*32, global_offset);
-                            cmt_matrix(i, j, k, cc_trans);
-                            f_mult_mat44s(cc_trans, global_offset, cc_trans);
-                            f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
-                            glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
-                            
+                        {   
                             if (noise3(i/perlin_period + gi*32, j/perlin_period + gj*32, k/perlin_period + gk*32) > perlin_cutoff)
                             {
-                                glDrawArrays(GL_TRIANGLES, 0, 12*3);
+                                if (i == 0 || j == 0 || k == 0 || i == 31 || j == 31 || k == 31)
+                                {
+                                    cmt_matrix(gi*32, gj*32, gk*32, global_offset);
+                                    cmt_matrix(i, j, k, cc_trans);
+                                    f_mult_mat44s(cc_trans, global_offset, cc_trans);
+                                    f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
+                                    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
+
+                                    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+                                }
+                                else if (!(perlinTest(i-1,j,k,gi,gj,gk) && perlinTest(i+1,j,k,gi,gj,gk) && perlinTest(i,j-1,k,gi,gj,gk) && perlinTest(i,j+1,k,gi,gj,gk) && perlinTest(i,j,k-1,gi,gj,gk) && perlinTest(i,j,k+1,gi,gj,gk)))
+                                {
+                                    cmt_matrix(gi*32, gj*32, gk*32, global_offset);
+                                    cmt_matrix(i, j, k, cc_trans);
+                                    f_mult_mat44s(cc_trans, global_offset, cc_trans);
+                                    f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
+                                    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
+
+                                    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+                                }
                             }
                         }
                     }
