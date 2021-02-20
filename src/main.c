@@ -55,6 +55,24 @@ int main(int argc, char *argv[])
                     case SDLK_a:
                     move_direction_x = -1;
                     break;
+
+                    //change perlin period:
+                    case SDLK_KP_PLUS:
+                    perlin_period += 1;
+                    break;
+
+                    case SDLK_KP_MINUS:
+                    perlin_period -= 1;
+                    break;
+
+                    //change perlin cutoff:
+                    case SDLK_KP_MULTIPLY:
+                    perlin_cutoff += 0.05;
+                    break;
+
+                    case SDLK_KP_DIVIDE:
+                    perlin_cutoff -= 0.05;
+                    break;
                 }
             }
             else if (event.type == SDL_KEYUP)

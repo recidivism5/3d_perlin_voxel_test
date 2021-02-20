@@ -282,22 +282,24 @@ int Update()
     return 0;
 }
 
+int perlin_period = 4;
+float perlin_cutoff = 0.2f;
 void world_draw()
 {
     static float chunk_cube_draw_matrix[16];
     static float cc_trans[16];
-    for (float k = 0; k < 16; k++)
+    for (float k = 0; k < 32; k++)
     {
-        for (float j = 0; j < 16; j++)
+        for (float j = 0; j < 32; j++)
         {
-            for (float i = 0; i < 16; i++)
+            for (float i = 0; i < 32; i++)
             {
                 cmt_matrix(i, j, k, cc_trans);
                 f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
                 glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
-                if (sqrt((i-8) * (i-8) + (j-8)*(j-8) + (k-8)*(k-8)) < 16)
+                if (sqrt((i-16) * (i-16) + (j-16)*(j-16) + (k-16)*(k-16)) < 16)
                 {
-                    if (pnoise3(i/16, j/16, k/16, 8, 8, 8) > 0.2)
+                    if (noise3(i/perlin_period, j/perlin_period, k/perlin_period) > perlin_cutoff)
                     {
                         glDrawArrays(GL_TRIANGLES, 0, 12*3);
                     }

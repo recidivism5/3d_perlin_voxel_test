@@ -49,3 +49,6 @@ void world_draw();
 int move_direction_z;
 int move_direction_x;
 void move();
+
+int perlin_period;
+float perlin_cutoff;
