@@ -287,12 +287,16 @@ float perlin_cutoff = 0.2f;
 
 int perlinTest(float i, float j, float k, float gi, float gj, float gk)
 {
+    if (i < 0 || j < 0 || k < 0 || i > 31 || j > 31 || k > 31)
+    {return 0;}
+
     if (noise3(i/perlin_period + gi*32, j/perlin_period + gj*32, k/perlin_period + gk*32) > perlin_cutoff)
     { return 1;}
     else
     { return 0;}
 }
 
+int toggle_full_draw = -1;
 void world_draw()
 {
     static float chunk_cube_draw_matrix[16];
@@ -300,7 +304,7 @@ void world_draw()
     static float global_offset[16];
     static float inter[16];
 
-    for (float gi = 0; gi < 2; gi++)
+    for (float gi = 0; gi < 1; gi++)
     {
         for (float gj = 0; gj < 2; gj++)
         {
@@ -314,25 +318,46 @@ void world_draw()
                         {   
                             if (noise3(i/perlin_period + gi*32, j/perlin_period + gj*32, k/perlin_period + gk*32) > perlin_cutoff)
                             {
-                                if (i == 0 || j == 0 || k == 0 || i == 31 || j == 31 || k == 31)
-                                {
-                                    cmt_matrix(gi*32, gj*32, gk*32, global_offset);
-                                    cmt_matrix(i, j, k, cc_trans);
-                                    f_mult_mat44s(cc_trans, global_offset, cc_trans);
-                                    f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
-                                    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
+                                cmt_matrix(gi*32, gj*32, gk*32, global_offset);
+                                cmt_matrix(i, j, k, cc_trans);
+                                f_mult_mat44s(cc_trans, global_offset, cc_trans);
+                                f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
+                                glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
 
+                                if (toggle_full_draw == 1)
+                                {
                                     glDrawArrays(GL_TRIANGLES, 0, 12*3);
                                 }
-                                else if (!(perlinTest(i-1,j,k,gi,gj,gk) && perlinTest(i+1,j,k,gi,gj,gk) && perlinTest(i,j-1,k,gi,gj,gk) && perlinTest(i,j+1,k,gi,gj,gk) && perlinTest(i,j,k-1,gi,gj,gk) && perlinTest(i,j,k+1,gi,gj,gk)))
-                                {
-                                    cmt_matrix(gi*32, gj*32, gk*32, global_offset);
-                                    cmt_matrix(i, j, k, cc_trans);
-                                    f_mult_mat44s(cc_trans, global_offset, cc_trans);
-                                    f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
-                                    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
 
-                                    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+                                
+                                if (!perlinTest(i-1,j,k,gi,gj,gk))
+                                {
+                                    glDrawArrays(GL_TRIANGLES, 30, 2*3);
+                                }
+
+                                if (!perlinTest(i+1,j,k,gi,gj,gk))
+                                {
+                                    glDrawArrays(GL_TRIANGLES, 24, 2*3);
+                                }
+
+                                if (!perlinTest(i,j-1,k,gi,gj,gk))
+                                {
+                                    glDrawArrays(GL_TRIANGLES, 18, 2*3);
+                                }
+
+                                if (!perlinTest(i,j+1,k,gi,gj,gk))
+                                {
+                                    glDrawArrays(GL_TRIANGLES, 6, 2*3); 
+                                }
+
+                                if (!perlinTest(i,j,k-1,gi,gj,gk))
+                                {
+                                    glDrawArrays(GL_TRIANGLES, 0, 2*3);
+                                }
+
+                                if (!perlinTest(i,j,k+1,gi,gj,gk))
+                                {
+                                    glDrawArrays(GL_TRIANGLES, 12, 2*3);
                                 }
                             }
                         }

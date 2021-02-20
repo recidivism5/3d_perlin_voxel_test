@@ -56,6 +56,10 @@ int main(int argc, char *argv[])
                     move_direction_x = -1;
                     break;
 
+                    case SDLK_p:
+                    toggle_full_draw = -toggle_full_draw;
+                    break;
+
                     //change perlin period:
                     case SDLK_KP_PLUS:
                     perlin_period += 1;
