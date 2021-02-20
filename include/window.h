@@ -9,6 +9,7 @@
 #include "texture.h"
 #include "world.h"
 #include "hash.h"
+#include "noise1234.h"
 
 SDL_Window    *m_window;
 SDL_GLContext  m_context;

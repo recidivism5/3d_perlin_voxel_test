@@ -297,7 +297,7 @@ void world_draw()
                 glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
                 if (sqrt((i-8) * (i-8) + (j-8)*(j-8) + (k-8)*(k-8)) < 16)
                 {
-                    if (gen3DPerlinValue(i, j, k, 32.0f) > 0.15)
+                    if (pnoise3(i/16, j/16, k/16, 8, 8, 8) > 0.2)
                     {
                         glDrawArrays(GL_TRIANGLES, 0, 12*3);
                     }
