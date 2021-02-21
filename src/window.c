@@ -304,6 +304,8 @@ int world_size = 2;
 int* world;
 int world_array_size;
 
+float i_shift = 0;
+
 void world_init()
 {
     world = malloc(32*32*32*world_size*world_size*world_size*sizeof(int));
@@ -321,7 +323,7 @@ void world_init()
                     {
                         for (float i = 0; i < 32; i++)
                         {   
-                            if (noise3(i/perlin_period + gi*32, j/perlin_period + gj*32, k/perlin_period + gk*32) > perlin_cutoff)
+                            if (noise3(i/perlin_period + gi*32 + i_shift, j/perlin_period + gj*32, k/perlin_period + gk*32) > perlin_cutoff)
                             {
                                 world[world_size*world_size*32*32*32*(int)gk + world_size*32*32*32*(int)gj + 32*32*32*(int)gi + 32*32*(int)k + 32*(int)j + (int)i] = 1;
                             }

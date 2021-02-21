@@ -55,3 +55,5 @@ int perlin_period;
 float perlin_cutoff;
 
 int toggle_full_draw;
+
+float i_shift;

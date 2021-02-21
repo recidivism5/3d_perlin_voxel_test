@@ -81,6 +81,17 @@ int main(int argc, char *argv[])
                     perlin_cutoff -= 0.05;
                     world_init();
                     break;
+
+                    //per-chunk shift:
+                    case SDLK_KP_1:
+                    i_shift -= 0.05;
+                    world_init();
+                    break;
+
+                    case SDLK_KP_2:
+                    i_shift += 0.05;
+                    world_init();
+                    break;
                 }
             }
             else if (event.type == SDL_KEYUP)
