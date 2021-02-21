@@ -378,36 +378,38 @@ void world_draw()
                                 {
                                     glDrawArrays(GL_TRIANGLES, 0, 12*3);
                                 }
-
+                                else
+                                {
                                 
-                                if (!check_cell(index-1) || i == 0)
-                                {
-                                    glDrawArrays(GL_TRIANGLES, 30, 2*3);
-                                }
+                                    if (!check_cell(index-1) || i == 0)
+                                    {
+                                        glDrawArrays(GL_TRIANGLES, 30, 2*3);
+                                    }
 
-                                if (!check_cell(index+1) || i == 31)
-                                {
-                                    glDrawArrays(GL_TRIANGLES, 24, 2*3);
-                                }
+                                    if (!check_cell(index+1) || i == 31)
+                                    {
+                                        glDrawArrays(GL_TRIANGLES, 24, 2*3);
+                                    }
 
-                                if (!check_cell(index-32) || j == 0)
-                                {
-                                    glDrawArrays(GL_TRIANGLES, 18, 2*3);
-                                }
+                                    if (!check_cell(index-32) || j == 0)
+                                    {
+                                        glDrawArrays(GL_TRIANGLES, 18, 2*3);
+                                    }
 
-                                if (!check_cell(index+32) || j == 31)
-                                {
-                                    glDrawArrays(GL_TRIANGLES, 6, 2*3); 
-                                }
+                                    if (!check_cell(index+32) || j == 31)
+                                    {
+                                        glDrawArrays(GL_TRIANGLES, 6, 2*3); 
+                                    }
 
-                                if (!check_cell(index-1024) || k == 0)
-                                {
-                                    glDrawArrays(GL_TRIANGLES, 0, 2*3);
-                                }
+                                    if (!check_cell(index-1024) || k == 0)
+                                    {
+                                        glDrawArrays(GL_TRIANGLES, 0, 2*3);
+                                    }
 
-                                if (!check_cell(index+1024) || k == 31)
-                                {
-                                    glDrawArrays(GL_TRIANGLES, 12, 2*3);
+                                    if (!check_cell(index+1024) || k == 31)
+                                    {
+                                        glDrawArrays(GL_TRIANGLES, 12, 2*3);
+                                    }
                                 }
                             }
                         }
