@@ -325,6 +325,10 @@ void world_init()
                             {
                                 world[world_size*world_size*32*32*32*(int)gk + world_size*32*32*32*(int)gj + 32*32*32*(int)gi + 32*32*(int)k + 32*(int)j + (int)i] = 1;
                             }
+                            else
+                            {
+                                world[world_size*world_size*32*32*32*(int)gk + world_size*32*32*32*(int)gj + 32*32*32*(int)gi + 32*32*(int)k + 32*(int)j + (int)i] = 0;
+                            }
                         }
                     }
                 }
