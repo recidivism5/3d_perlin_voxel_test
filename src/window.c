@@ -122,6 +122,8 @@ int Initialize()
 
     SeedWorld(4);
 
+    world_init();
+
     return 0;
 }
 
@@ -297,18 +299,21 @@ int perlinTest(float i, float j, float k, float gi, float gj, float gk)
 }
 
 int toggle_full_draw = -1;
-void world_draw()
-{
-    static float chunk_cube_draw_matrix[16];
-    static float cc_trans[16];
-    static float global_offset[16];
-    static float inter[16];
 
-    for (float gi = 0; gi < 1; gi++)
+int world_size = 2;
+int* world;
+int world_array_size;
+
+void world_init()
+{
+    world = malloc(32*32*32*world_size*world_size*world_size*sizeof(int));
+    world_array_size = 32*32*32*world_size*world_size*world_size;
+
+    for (float gi = 0; gi < world_size; gi++)
     {
-        for (float gj = 0; gj < 2; gj++)
+        for (float gj = 0; gj < world_size; gj++)
         {
-            for (float gk = 0; gk < 2; gk++)
+            for (float gk = 0; gk < world_size; gk++)
             {
                 for (float k = 0; k < 32; k++)
                 {
@@ -317,6 +322,51 @@ void world_draw()
                         for (float i = 0; i < 32; i++)
                         {   
                             if (noise3(i/perlin_period + gi*32, j/perlin_period + gj*32, k/perlin_period + gk*32) > perlin_cutoff)
+                            {
+                                world[world_size*world_size*32*32*32*(int)gk + world_size*32*32*32*(int)gj + 32*32*32*(int)gi + 32*32*(int)k + 32*(int)j + (int)i] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+int check_cell(int index)
+{
+    if (index < 0 || index > world_array_size-1)
+    {
+        return 0;
+    }
+    else
+    {
+        return world[index];
+    }
+}
+
+void world_draw()
+{
+    static float chunk_cube_draw_matrix[16];
+    static float cc_trans[16];
+    static float global_offset[16];
+    static float inter[16];
+
+    for (float gi = 0; gi < world_size; gi++)
+    {
+        for (float gj = 0; gj < world_size; gj++)
+        {
+            for (float gk = 0; gk < world_size; gk++)
+            {
+                for (float k = 0; k < 32; k++)
+                {
+                    for (float j = 0; j < 32; j++)
+                    {
+                        for (float i = 0; i < 32; i++)
+                        {   
+                            static int index;
+                            index = world_size*world_size*32*32*32*(int)gk + world_size*32*32*32*(int)gj + 32*32*32*(int)gi + 32*32*(int)k + 32*(int)j + (int)i;
+                            if (world[index])
                             {
                                 cmt_matrix(gi*32, gj*32, gk*32, global_offset);
                                 cmt_matrix(i, j, k, cc_trans);
@@ -330,32 +380,32 @@ void world_draw()
                                 }
 
                                 
-                                if (!perlinTest(i-1,j,k,gi,gj,gk))
+                                if (!check_cell(index-1) || i == 0)
                                 {
                                     glDrawArrays(GL_TRIANGLES, 30, 2*3);
                                 }
 
-                                if (!perlinTest(i+1,j,k,gi,gj,gk))
+                                if (!check_cell(index+1) || i == 31)
                                 {
                                     glDrawArrays(GL_TRIANGLES, 24, 2*3);
                                 }
 
-                                if (!perlinTest(i,j-1,k,gi,gj,gk))
+                                if (!check_cell(index-32) || j == 0)
                                 {
                                     glDrawArrays(GL_TRIANGLES, 18, 2*3);
                                 }
 
-                                if (!perlinTest(i,j+1,k,gi,gj,gk))
+                                if (!check_cell(index+32) || j == 31)
                                 {
                                     glDrawArrays(GL_TRIANGLES, 6, 2*3); 
                                 }
 
-                                if (!perlinTest(i,j,k-1,gi,gj,gk))
+                                if (!check_cell(index-1024) || k == 0)
                                 {
                                     glDrawArrays(GL_TRIANGLES, 0, 2*3);
                                 }
 
-                                if (!perlinTest(i,j,k+1,gi,gj,gk))
+                                if (!check_cell(index+1024) || k == 31)
                                 {
                                     glDrawArrays(GL_TRIANGLES, 12, 2*3);
                                 }

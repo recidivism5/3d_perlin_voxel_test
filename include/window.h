@@ -44,6 +44,7 @@ void InitMatrices();
 void UpdateMatrices();
 int InitTextures();
 
+void world_init();
 void world_draw();
 
 int move_direction_z;

@@ -63,19 +63,23 @@ int main(int argc, char *argv[])
                     //change perlin period:
                     case SDLK_KP_PLUS:
                     perlin_period += 1;
+                    world_init();
                     break;
 
                     case SDLK_KP_MINUS:
                     perlin_period -= 1;
+                    world_init();
                     break;
 
                     //change perlin cutoff:
                     case SDLK_KP_MULTIPLY:
                     perlin_cutoff += 0.05;
+                    world_init();
                     break;
 
                     case SDLK_KP_DIVIDE:
                     perlin_cutoff -= 0.05;
+                    world_init();
                     break;
                 }
             }
