@@ -20,4 +20,10 @@ typedef int socklen_t;
 #endif
 #include <pthread.h>
 
+float own_position[3];
+float friend_position[3];
+
+bool bConnectionSuccess;
+
 void* start_client(void* args);
+void client_send_position();

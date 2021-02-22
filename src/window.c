@@ -222,12 +222,15 @@ void UpdateMatrices()
 
 }
 
-/*
- * Render a frame
- */
+void update_client_position()
+{
+    memcpy(&own_position, &cam_pos, sizeof(own_position));
+}
 
+//per frame
 int Update()
 {
+    update_client_position();
 
     update_mouse();
     move();

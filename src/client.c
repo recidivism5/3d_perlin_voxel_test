@@ -1,5 +1,8 @@
 #include <client.h>
 
+float own_position[3] = {0.0f, 0.0f, 0.0f};
+float friend_position[3] = {0.0f,0.0f,0.0f};
+
 // function definitions.
 bool ConnectToHost(int PortNo, char *IPAddressBuffer);
 void CloseConnection();
@@ -254,6 +257,8 @@ void Chat()
                 }
             }
 
+            client_send_position();
+
             // Prep file descriptor set
             FD_ZERO(&FDS);
             FD_SET(ServerSocket, &FDS);
@@ -405,4 +410,9 @@ void GetValidIP(char *IPAddressBuffer) {
             printf("\nInvalid Input IP address.  Try again.\n");
     }
     while (!bValidInput);
+}
+
+void client_send_position()
+{
+    send(ServerSocket, &own_position[0], sizeof(float), 0);
 }
