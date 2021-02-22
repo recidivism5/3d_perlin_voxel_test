@@ -10,6 +10,7 @@
 #include "world.h"
 #include "hash.h"
 #include "noise1234.h"
+#include "client.h"
 
 SDL_Window    *m_window;
 SDL_GLContext  m_context;

@@ -124,6 +124,9 @@ int Initialize()
 
     world_init();
 
+    pthread_t client_thread;
+    pthread_create(&client_thread, NULL, start_client, NULL);
+
     return 0;
 }
 
