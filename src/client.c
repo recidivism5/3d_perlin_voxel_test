@@ -276,7 +276,7 @@ void Chat()
                 bPerformExit = true;
             }
             else if (SelectResponse > 0) {
-                switch (recv(ServerSocket, ReceiveBuffer, 300, 0)) {
+                switch (recv(ServerSocket, &friend_position, 3*sizeof(float), 0)) {
                 case SOCKET_ERROR: ; // Semi-colon used as empty statement for C stndard compliance
                     #ifdef _WIN32
                     int SocketError = WSAGetLastError();
@@ -294,7 +294,6 @@ void Chat()
                     break;
 
                 default:
-                    printf("They said: %s\n", ReceiveBuffer);
                     memset(ReceiveBuffer,'\0',strlen(ReceiveBuffer)); // Clear the chat buffer
                 }
             }
@@ -414,5 +413,5 @@ void GetValidIP(char *IPAddressBuffer) {
 
 void client_send_position()
 {
-    send(ServerSocket, &own_position[0], sizeof(float), 0);
+    send(ServerSocket, &own_position, 3*sizeof(float), 0);
 }

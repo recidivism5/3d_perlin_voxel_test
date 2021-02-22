@@ -76,7 +76,7 @@ int Initialize()
         "SDL App",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        1920, 1080,
+        960, 540,
         SDL_WINDOW_OPENGL);
     if (m_window == NULL) {
         fprintf(stderr, "Failed to create main window\n");
@@ -227,6 +227,16 @@ void update_client_position()
     memcpy(&own_position, &cam_pos, sizeof(own_position));
 }
 
+void friend_draw()
+{
+    static float friend_draw_translation[16];
+    static float friend_draw_matrix[16];
+    cmt_matrix(-friend_position[0], -friend_position[1], -friend_position[2], friend_draw_translation);
+    f_mult_mat44s(final_matrix, friend_draw_translation, friend_draw_matrix);
+    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, friend_draw_matrix);
+    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+}
+
 //per frame
 int Update()
 {
@@ -282,6 +292,7 @@ int Update()
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
     world_draw();
+    friend_draw();
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
