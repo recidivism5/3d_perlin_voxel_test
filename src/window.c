@@ -143,6 +143,9 @@ int InitOpenGL()
 
     InitShaderProgram(&shader_program_ids[1], "tutorial5");
     matrix_ids[1] = glGetUniformLocation(shader_program_ids[1], "MVP");
+
+    InitShaderProgram(&shader_program_ids[2], "diffuse");
+    matrix_ids[2] = glGetUniformLocation(shader_program_ids[2], "MVP");
     
     glGenBuffers(1, &vertex_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
@@ -151,13 +154,18 @@ int InitOpenGL()
     glGenBuffers(1, &color_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cube_color_data), cube_color_data, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &triNormals_buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_normals), cube_normals, GL_STATIC_DRAW);
 }
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/mj256mip3.DDS");
+    textures[0] = loadDDS("../res/tex/results/sand_.DDS");
 	
-	texture_ids[0]  = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
+	texture_ids[0] = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
+    texture_ids[1] = glGetUniformLocation(shader_program_ids[2], "myTextureSampler");
 
     glGenBuffers(1, &uv_buffers[0]);
     glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
@@ -211,15 +219,6 @@ void UpdateMatrices()
     f_mult_mat44s(final_matrix_2, rotation_inverse, final_matrix_2);
     f_mult_mat44s(final_matrix_2, test_trans, final_matrix_2);
 
-    scale_factor = 50.5f;
-    memcpy(scale_matrix, identity44, sizeof(identity44));
-    scale_matrix[0] *= scale_factor;
-    scale_matrix[5] *= scale_factor;
-    scale_matrix[10] *= scale_factor;
-    f_mult_mat44s(final_wtc, scale_matrix, final_matrix_3);
-    f_mult_mat44s(perspective_proj, final_matrix_3, final_matrix_3);
-    f_mult_mat44s(final_matrix_3, model_to_world, final_matrix_3);
-
 }
 
 void update_client_position()
@@ -250,27 +249,6 @@ int Update()
     glClearColor(0.0f, 0.224f, 0.124f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUseProgram(shader_program_ids[0]);
-
-    glUniformMatrix4fv(matrix_ids[0], 1, GL_TRUE, final_matrix);
-
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, color_buffer_id);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-    //glDrawArrays(GL_TRIANGLES, 0, 12*3);
-
-    glUniformMatrix4fv(matrix_ids[0], 1, GL_TRUE, final_matrix_2);
-
-    //glDrawArrays(GL_TRIANGLES, 0, 12*3);
-
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-
     //JOJ region:
     glUseProgram(shader_program_ids[1]);
     glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix_2);
@@ -286,10 +264,9 @@ int Update()
     glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 12*3);
-
-    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix);
-    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+    //glEnableVertexAttribArray(2);
+    //glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     world_draw();
     friend_draw();
@@ -354,6 +331,11 @@ void world_init()
             }
         }
     }
+}
+
+void block_break()
+{
+    
 }
 
 int check_cell(int index)

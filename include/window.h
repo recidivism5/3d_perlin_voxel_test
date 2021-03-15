@@ -15,10 +15,11 @@
 SDL_Window    *m_window;
 SDL_GLContext  m_context;
 GLuint         vertex_array_id, vertex_buffer_id, color_buffer_id;
+GLuint         triNormals_buffer_id;
 
-GLuint         shader_program_ids[2];
-GLuint         matrix_ids[2];
-GLuint         texture_ids[1];
+GLuint         shader_program_ids[3];
+GLuint         matrix_ids[3];
+GLuint         texture_ids[2];
 
 GLuint         textures[1];
 GLuint         uv_buffers[1];
@@ -34,7 +35,6 @@ float final_wtc[16];
 float perspective_proj[16];
 float final_matrix[16];
 float final_matrix_2[16];
-float final_matrix_3[16];
 
 int Initialize();
 int Update();
@@ -47,6 +47,7 @@ int InitTextures();
 
 void world_init();
 void world_draw();
+void block_break();
 
 int move_direction_z;
 int move_direction_x;
