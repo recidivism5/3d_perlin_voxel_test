@@ -29,8 +29,8 @@ int InitShaderProgram(GLuint* program_id, char* name)
 
     // Compile vertex shader
     memcpy(&final_path[0], base_path, sizeof(base_path));
-    memcpy(&final_path[15], name, sizeof(name)+1);
-    memcpy(&final_path[16+sizeof(name)], end_path_vert, sizeof(end_path_vert));
+    memcpy(&final_path[15], name, strlen(name));
+    memcpy(&final_path[15+strlen(name)], end_path_vert, sizeof(end_path_vert));
     printf("\n building %s", final_path);
 
     char* vert_shader_src = read_shader_src(final_path);
@@ -38,7 +38,7 @@ int InitShaderProgram(GLuint* program_id, char* name)
     glCompileShader(vertex_shader_id);
 
     // Compile fragment shader
-    memcpy(&final_path[16+sizeof(name)], end_path_frag, sizeof(end_path_frag));
+    memcpy(&final_path[15+strlen(name)], end_path_frag, sizeof(end_path_frag));
     printf("\n building %s", final_path);
     printf("\n");
 
@@ -59,7 +59,7 @@ int InitShaderProgram(GLuint* program_id, char* name)
     glDeleteShader(fragment_shader_id);
 
     //Use program
-    glUseProgram(*program_id);
+    //glUseProgram(*program_id);
 
     return 0;
 }

@@ -228,12 +228,20 @@ void update_client_position()
 
 void friend_draw()
 {
+    glUseProgram(shader_program_ids[SHADER_DIFFUSE]);
+    
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+
     static float friend_draw_translation[16];
     static float friend_draw_matrix[16];
     cmt_matrix(-friend_position[0], -friend_position[1], -friend_position[2], friend_draw_translation);
     f_mult_mat44s(final_matrix, friend_draw_translation, friend_draw_matrix);
-    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, friend_draw_matrix);
+    glUniformMatrix4fv(matrix_ids[SHADER_DIFFUSE], 1, GL_TRUE, friend_draw_matrix);
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
+
+    glDisableVertexAttribArray(2);
 }
 
 //per frame
@@ -258,15 +266,11 @@ int Update()
     
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-    //glEnableVertexAttribArray(2);
-    //glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
 
     world_draw();
     friend_draw();

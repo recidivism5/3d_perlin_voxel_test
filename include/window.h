@@ -17,6 +17,7 @@ SDL_GLContext  m_context;
 GLuint         vertex_array_id, vertex_buffer_id, color_buffer_id;
 GLuint         triNormals_buffer_id;
 
+#define SHADER_DIFFUSE 2
 GLuint         shader_program_ids[3];
 GLuint         matrix_ids[3];
 GLuint         texture_ids[2];
