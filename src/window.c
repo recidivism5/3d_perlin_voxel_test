@@ -188,13 +188,7 @@ void InitMatrices()
 
 void UpdateMatrices()
 {
-    static float x_rot = 0.0f;
-    static float y_rot = 0.0f;
     
-    rot_matrix(x_rot, y_rot, model_to_world);
-    static float rotation_inverse[16];
-    rot_matrix(-x_rot, -y_rot*3, rotation_inverse);
-
     static float camera_rotation_matrix[16];
     rot_matrix(cam_rot_x, cam_rot_y, camera_rotation_matrix);
     static float camera_column_trans[16];
@@ -202,7 +196,6 @@ void UpdateMatrices()
     
     f_mult_mat44s(camera_rotation_matrix, camera_column_trans, final_wtc);
     f_mult_mat44s(perspective_proj, final_wtc, final_matrix);
-    f_mult_mat44s(final_matrix, rotation_inverse, final_matrix);
 
     static float scale_matrix[16];
     static float scale_factor;
@@ -216,7 +209,6 @@ void UpdateMatrices()
     cmt_matrix(5.0f, 0.0f, 0.0f, test_trans);
     f_mult_mat44s(final_wtc, scale_matrix, final_matrix_2);
     f_mult_mat44s(perspective_proj, final_matrix_2, final_matrix_2);
-    f_mult_mat44s(final_matrix_2, rotation_inverse, final_matrix_2);
     f_mult_mat44s(final_matrix_2, test_trans, final_matrix_2);
 
 }
@@ -233,6 +225,9 @@ void friend_draw()
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+
+    static float lightPos[3] = {2,3,-5};
+    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos"), 1, lightPos);
 
     static float friend_draw_translation[16];
     static float friend_draw_matrix[16];

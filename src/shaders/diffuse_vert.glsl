@@ -8,6 +8,9 @@ layout(location = 2) in vec3 tNormal;
 // Output data ; will be interpolated for each fragment.
 out vec2 UV;
 
+out vec3 FragPos;
+out vec3 Normal;
+
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
 
@@ -18,4 +21,6 @@ void main(){
 
     // UV of the vertex. No special space for this one.
     UV = vertexUV;
+
+    Normal = tNormal;
 }
