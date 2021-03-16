@@ -13,6 +13,7 @@ out vec3 Normal;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
+uniform mat4 model_to_world;
 
 void main(){
 
@@ -22,5 +23,6 @@ void main(){
     // UV of the vertex. No special space for this one.
     UV = vertexUV;
 
-    Normal = tNormal;
+    FragPos = vec3(model_to_world * vec4(vertexPosition_modelspace,1));
+    Normal = vec3(model_to_world) * tNormal;
 }

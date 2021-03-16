@@ -229,11 +229,38 @@ void friend_draw()
     static float lightPos[3] = {2,3,-5};
     //util_setVec3(shader_program_ids[SHADER_DIFFUSE], "lightPos", lightPos);
     glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos"), 1, lightPos);
+    static float lightColor[3] = {1.0f, 0.5f, 0.31f};
+    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightColor"), 1, lightColor);
+    
+    static float friend_translation_mat[16];
+    static float friend_rotation_mat[16];
+    static float friend_rot_x = 2.0f;
+    static float friend_rot_y = 1.5f;
+    if (friend_rot_x < 3.14)
+    {
+        friend_rot_x += 0.01f;
+    }
+    else
+    {
+        friend_rot_x = 0.0f;
+    }
+    if (friend_rot_y < 3.14)
+    {
+        friend_rot_y += 0.01f;
+    }
+    else
+    {
+        friend_rot_y = 0.0f;
+    }
+    static float friend_model_to_world[16];
+    cmt_matrix(-friend_position[0], -friend_position[1], -friend_position[2], friend_translation_mat);
+    rot_matrix(friend_rot_x, friend_rot_y, friend_rotation_mat);
+    f_mult_mat44s(friend_translation_mat, friend_rotation_mat, friend_model_to_world);
 
-    static float friend_draw_translation[16];
     static float friend_draw_matrix[16];
-    cmt_matrix(-friend_position[0], -friend_position[1], -friend_position[2], friend_draw_translation);
-    f_mult_mat44s(final_matrix, friend_draw_translation, friend_draw_matrix);
+    f_mult_mat44s(final_matrix, friend_model_to_world, friend_draw_matrix);
+    
+    glUniformMatrix4fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "model_to_world"), 1, GL_TRUE, friend_model_to_world);
     glUniformMatrix4fv(matrix_ids[SHADER_DIFFUSE], 1, GL_TRUE, friend_draw_matrix);
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
