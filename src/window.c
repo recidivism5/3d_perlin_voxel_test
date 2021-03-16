@@ -162,7 +162,7 @@ int InitOpenGL()
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/mj256mip3.DDS");
+    textures[0] = loadDDS("../res/tex/results/sand_.DDS");
 	
 	texture_ids[0] = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
     texture_ids[1] = glGetUniformLocation(shader_program_ids[2], "myTextureSampler");
@@ -227,7 +227,6 @@ void friend_draw()
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
     static float lightPos[3] = {2,3,-5};
-    //util_setVec3(shader_program_ids[SHADER_DIFFUSE], "lightPos", lightPos);
     glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos"), 1, lightPos);
     static float lightColor[3] = {1.0f, 0.5f, 0.31f};
     glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightColor"), 1, lightColor);
@@ -281,8 +280,8 @@ int Update()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //JOJ region:
-    glUseProgram(shader_program_ids[1]);
-    glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, final_matrix_2);
+    glUseProgram(shader_program_ids[SHADER_DIFFUSE]);
+    glUniformMatrix4fv(matrix_ids[2], 1, GL_TRUE, final_matrix_2);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glUniform1i(texture_ids[0], 0);
@@ -295,11 +294,21 @@ int Update()
     glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
 
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+
+    static float lightPos[3] = {2,3,-5};
+    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos"), 1, lightPos);
+    static float lightColor[3] = {1.0f, 0.5f, 0.31f};
+    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightColor"), 1, lightColor);
+
     world_draw();
     friend_draw();
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 
     SDL_GL_SwapWindow(m_window);
     return 0;
@@ -404,7 +413,8 @@ void world_draw()
                                 cmt_matrix(i, j, k, cc_trans);
                                 f_mult_mat44s(cc_trans, global_offset, cc_trans);
                                 f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
-                                glUniformMatrix4fv(matrix_ids[1], 1, GL_TRUE, chunk_cube_draw_matrix);
+                                glUniformMatrix4fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "model_to_world"), 1, GL_TRUE, cc_trans);
+                                glUniformMatrix4fv(matrix_ids[SHADER_DIFFUSE], 1, GL_TRUE, chunk_cube_draw_matrix);
 
                                 if (toggle_full_draw == 1)
                                 {
