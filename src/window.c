@@ -227,6 +227,7 @@ void friend_draw()
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
     static float lightPos[3] = {2,3,-5};
+    //util_setVec3(shader_program_ids[SHADER_DIFFUSE], "lightPos", lightPos);
     glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos"), 1, lightPos);
 
     static float friend_draw_translation[16];

@@ -9,10 +9,10 @@ BIN = ../bin
 
 LIBS=-lm -lmingw32 -lSDL2main -lSDL2 -lglew32 -lopengl32 -lwsock32
 
-_DEPS = pipeline.h shader.h window.h cube.h quaternion.h matrices.h texture.h world.h mtwister.h hash.h noise1234.h client.h
+_DEPS = pipeline.h shader.h window.h cube.h quaternion.h matrices.h texture.h world.h mtwister.h hash.h noise1234.h client.h gl_util.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o pipeline.o shader.o window.o cube.o quaternion.o matrices.o texture.o world.o mtwister.o hash.o noise1234.o client.o
+_OBJ = main.o pipeline.o shader.o window.o cube.o quaternion.o matrices.o texture.o world.o mtwister.o hash.o noise1234.o client.o gl_util.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
