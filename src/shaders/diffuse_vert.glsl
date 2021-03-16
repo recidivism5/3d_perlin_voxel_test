@@ -24,5 +24,5 @@ void main(){
     UV = vertexUV;
 
     FragPos = vec3(model_to_world * vec4(vertexPosition_modelspace,1));
-    Normal = vec3(model_to_world) * tNormal;
+    Normal = mat3(model_to_world) * tNormal;
 }

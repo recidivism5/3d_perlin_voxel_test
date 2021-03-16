@@ -162,7 +162,7 @@ int InitOpenGL()
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/results/sand_.DDS");
+    textures[0] = loadDDS("../res/tex/mj256mip3.DDS");
 	
 	texture_ids[0] = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
     texture_ids[1] = glGetUniformLocation(shader_program_ids[2], "myTextureSampler");
@@ -236,7 +236,7 @@ void friend_draw()
     static float friend_rotation_mat[16];
     static float friend_rot_x = 2.0f;
     static float friend_rot_y = 1.5f;
-    if (friend_rot_x < 3.14)
+    if (friend_rot_x < 2*3.14)
     {
         friend_rot_x += 0.01f;
     }
@@ -244,7 +244,7 @@ void friend_draw()
     {
         friend_rot_x = 0.0f;
     }
-    if (friend_rot_y < 3.14)
+    if (friend_rot_y < 2*3.14)
     {
         friend_rot_y += 0.01f;
     }
