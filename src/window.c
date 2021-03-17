@@ -144,8 +144,10 @@ int InitOpenGL()
     InitShaderProgram(&shader_program_ids[1], "tutorial5");
     matrix_ids[1] = glGetUniformLocation(shader_program_ids[1], "MVP");
 
-    InitShaderProgram(&shader_program_ids[2], "diffuse");
-    matrix_ids[2] = glGetUniformLocation(shader_program_ids[2], "MVP");
+    InitShaderProgram(&shader_program_ids[SHADER_DIFFUSE], "diffuse");
+    matrix_ids[SHADER_DIFFUSE] = glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "MVP");
+
+    lightPos_id = glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos");
     
     glGenBuffers(1, &vertex_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
@@ -199,14 +201,14 @@ void UpdateMatrices()
 
     static float scale_matrix[16];
     static float scale_factor;
-    scale_factor = 0.5f;
+    scale_factor = 1.0f;
     memcpy(scale_matrix, identity44, sizeof(identity44));
     scale_matrix[0] *= scale_factor;
     scale_matrix[5] *= scale_factor;
     scale_matrix[10] *= scale_factor;
 
     static float test_trans[16];
-    cmt_matrix(5.0f, 0.0f, 0.0f, test_trans);
+    cmt_matrix(0.0f, 0.0f, 0.0f, test_trans);
     f_mult_mat44s(final_wtc, scale_matrix, final_matrix_2);
     f_mult_mat44s(perspective_proj, final_matrix_2, final_matrix_2);
     f_mult_mat44s(final_matrix_2, test_trans, final_matrix_2);
@@ -226,8 +228,8 @@ void friend_draw()
     glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
-    static float lightPos[3] = {2,3,-5};
-    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos"), 1, lightPos);
+    static float lightPos[3] = {2,3,5};
+    glUniform3fv(lightPos_id, 1, lightPos);
     static float lightColor[3] = {1.0f, 0.5f, 0.31f};
     glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightColor"), 1, lightColor);
     
@@ -238,10 +240,12 @@ void friend_draw()
     if (friend_rot_x < 2*3.14)
     {
         friend_rot_x += 0.01f;
+        friend_position[2] += 0.01f;
     }
     else
     {
         friend_rot_x = 0.0f;
+        friend_position[2] = 0.0f;
     }
     if (friend_rot_y < 2*3.14)
     {
@@ -261,6 +265,9 @@ void friend_draw()
     
     glUniformMatrix4fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "model_to_world"), 1, GL_TRUE, friend_model_to_world);
     glUniformMatrix4fv(matrix_ids[SHADER_DIFFUSE], 1, GL_TRUE, friend_draw_matrix);
+    lightPos[0] = -cam_pos[0];
+    lightPos[1] = -cam_pos[1];
+    lightPos[2] = -cam_pos[2];
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
     glDisableVertexAttribArray(2);
@@ -298,9 +305,12 @@ int Update()
     glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
-    static float lightPos[3] = {2,3,-5};
-    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos"), 1, lightPos);
+    static float lightPos[3] = {2.0f,3.0f,5.0f};
+    glUniform3fv(lightPos_id, 1, lightPos);
     static float lightColor[3] = {1.0f, 0.5f, 0.31f};
+    lightPos[0] = -cam_pos[0];
+    lightPos[1] = -cam_pos[1];
+    lightPos[2] = -cam_pos[2];
     glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightColor"), 1, lightColor);
 
     world_draw();
@@ -330,7 +340,7 @@ int perlinTest(float i, float j, float k, float gi, float gj, float gk)
 
 int toggle_full_draw = -1;
 
-int world_size = 2;
+int world_size = 1;
 int* world;
 int world_array_size;
 
@@ -413,6 +423,7 @@ void world_draw()
                                 cmt_matrix(i, j, k, cc_trans);
                                 f_mult_mat44s(cc_trans, global_offset, cc_trans);
                                 f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
+
                                 glUniformMatrix4fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "model_to_world"), 1, GL_TRUE, cc_trans);
                                 glUniformMatrix4fv(matrix_ids[SHADER_DIFFUSE], 1, GL_TRUE, chunk_cube_draw_matrix);
 

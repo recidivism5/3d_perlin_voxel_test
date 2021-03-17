@@ -61,3 +61,5 @@ float perlin_cutoff;
 int toggle_full_draw;
 
 float i_shift;
+
+GLuint lightPos_id;
