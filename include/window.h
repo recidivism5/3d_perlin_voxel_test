@@ -17,6 +17,7 @@ SDL_Window    *m_window;
 SDL_GLContext  m_context;
 GLuint         vertex_array_id, vertex_buffer_id, color_buffer_id;
 GLuint         triNormals_buffer_id;
+GLuint         world_vertex_buffer_id;
 
 #define SHADER_DIFFUSE 2
 GLuint         shader_program_ids[3];
@@ -48,8 +49,8 @@ void UpdateMatrices();
 int InitTextures();
 
 void world_init();
+void world_fill_vert_buffer();
 void world_draw();
-void block_break();
 
 int move_direction_z;
 int move_direction_x;

@@ -34,6 +34,13 @@ const float z_axis[3] = {0.0f, 0.0f, 1.0f};
 
 float identity44[16] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
 
+void add_vec3(float vec1[3], float vec2[3], float output[3])
+{
+    output[0] = vec1[0] + vec2[0];
+    output[1] = vec1[1] + vec2[1];
+    output[2] = vec1[2] + vec2[2];
+}
+
 void cross_product(float vec1[3], float vec2[3], float* output)
 {
     output[0] = vec1[1] * vec2[2] - vec1[2] * vec2[1];

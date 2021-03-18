@@ -12,6 +12,7 @@ const float z_axis[3];
 float identity44[16];
 
 void f_mult_mat44s(float* mat1, float* mat2, float* output);
+void add_vec3(float vec1[3], float vec2[3], float output[3]);
 void cross_product(float vec1[3], float vec2[3], float* output);
 
 float* lookAt(float cam_pos[3], float center[3], float up[3]);

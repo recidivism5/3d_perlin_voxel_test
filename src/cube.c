@@ -18,6 +18,17 @@ const GLfloat cube_vertices[108] = {0.5,0.5,-0.5, 0.5,-0.5,-0.5, -0.5,-0.5,-0.5,
             -0.5, 0.5, -0.5,-0.5, -0.5, -0.5,-0.5, -0.5, 0.5,
             -0.5, 0.5, -0.5,-0.5, 0.5, 0.5,-0.5, -0.5, 0.5};
 
+void translate_cube_vertices(float trans[3], float output[108])
+{
+    static int i;
+    for (i = 0; i < 106; i += 3)
+    {
+        output[i] = cube_vertices[i] + trans[0];
+        output[i+1] = cube_vertices[i+1] + trans[1];
+        output[i+2] = cube_vertices[i+2] + trans[2];
+    }
+}
+
 const GLfloat cube_normals[108] = {0,0,-1, 0,0,-1, 0,0,-1,
                                   0,0,-1, 0,0,-1, 0,0,-1,
                                   

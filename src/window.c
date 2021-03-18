@@ -223,6 +223,10 @@ void update_client_position()
 void friend_draw()
 {
     glUseProgram(shader_program_ids[SHADER_DIFFUSE]);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
     
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
@@ -343,6 +347,8 @@ int toggle_full_draw = -1;
 int world_size = 1;
 int* world;
 int world_array_size;
+int world_total_blocks = 0;
+int world_vert_array_size = 0;
 
 float i_shift = 0;
 
@@ -366,6 +372,7 @@ void world_init()
                             if (noise3(i/perlin_period + gi*32 + i_shift, j/perlin_period + gj*32, k/perlin_period + gk*32) > perlin_cutoff)
                             {
                                 world[world_size*world_size*32*32*32*(int)gk + world_size*32*32*32*(int)gj + 32*32*32*(int)gi + 32*32*(int)k + 32*(int)j + (int)i] = 1;
+                                world_total_blocks += 1;
                             }
                             else
                             {
@@ -377,10 +384,16 @@ void world_init()
             }
         }
     }
-}
 
-void block_break()
-{
+    world_fill_vert_buffer();
+
+    glGenBuffers(1, &world_vertex_buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, world_vertex_buffer_id);
+    glBufferData(GL_ARRAY_BUFFER, world_vert_array_size*sizeof(float), world_vert_buffer, GL_STATIC_DRAW);
+    for (int q = 0; q < 50; q++)
+    {
+        printf("\n %f", world_vert_buffer[q]);
+    }
     
 }
 
@@ -398,10 +411,20 @@ int check_cell(int index)
 
 void world_draw()
 {
-    static float chunk_cube_draw_matrix[16];
-    static float cc_trans[16];
-    static float global_offset[16];
-    static float inter[16];
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, world_vertex_buffer_id);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+
+    glUniformMatrix4fv(matrix_ids[SHADER_DIFFUSE], 1, GL_TRUE, final_matrix_2);
+    glDrawArrays(GL_TRIANGLES, 0, world_array_size*3*12);
+}
+
+void world_fill_vert_buffer()
+{
+    world_vert_array_size = world_total_blocks*3*3*12;
+    world_vert_buffer = malloc(world_vert_array_size*sizeof(float));
+    static long int world_vert_array_index;
+    world_vert_array_index = 0;
 
     for (float gi = 0; gi < world_size; gi++)
     {
@@ -419,50 +442,49 @@ void world_draw()
                             index = world_size*world_size*32*32*32*(int)gk + world_size*32*32*32*(int)gj + 32*32*32*(int)gi + 32*32*(int)k + 32*(int)j + (int)i;
                             if (world[index])
                             {
-                                cmt_matrix(gi*32, gj*32, gk*32, global_offset);
-                                cmt_matrix(i, j, k, cc_trans);
-                                f_mult_mat44s(cc_trans, global_offset, cc_trans);
-                                f_mult_mat44s(final_matrix_2, cc_trans, chunk_cube_draw_matrix);
 
-                                glUniformMatrix4fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "model_to_world"), 1, GL_TRUE, cc_trans);
-                                glUniformMatrix4fv(matrix_ids[SHADER_DIFFUSE], 1, GL_TRUE, chunk_cube_draw_matrix);
+                                static float c_trans[3];
+                                c_trans[0] = gi*32 + i;
+                                c_trans[1] = gj*32 + j;
+                                c_trans[2] = gk*32 + k;
 
-                                if (toggle_full_draw == 1)
-                                {
-                                    glDrawArrays(GL_TRIANGLES, 0, 12*3);
-                                }
-                                else
-                                {
+                                static float v_translated[108];
+                                translate_cube_vertices(c_trans, v_translated);
                                 
-                                    if (!check_cell(index-1) || i == 0)
-                                    {
-                                        glDrawArrays(GL_TRIANGLES, 30, 2*3);
-                                    }
+                                if (!check_cell(index-1) || i == 0)
+                                {
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[30*3], 2*3*3*sizeof(float));
+                                    world_vert_array_index += 18;
+                                }
 
-                                    if (!check_cell(index+1) || i == 31)
-                                    {
-                                        glDrawArrays(GL_TRIANGLES, 24, 2*3);
-                                    }
+                                if (!check_cell(index+1) || i == 31)
+                                {
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[24*3], 2*3*3*sizeof(float));
+                                    world_vert_array_index += 18;
+                                }
 
-                                    if (!check_cell(index-32) || j == 0)
-                                    {
-                                        glDrawArrays(GL_TRIANGLES, 18, 2*3);
-                                    }
+                                if (!check_cell(index-32) || j == 0)
+                                {
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[18*3], 2*3*3*sizeof(float));
+                                    world_vert_array_index += 18;
+                                }
 
-                                    if (!check_cell(index+32) || j == 31)
-                                    {
-                                        glDrawArrays(GL_TRIANGLES, 6, 2*3); 
-                                    }
+                                if (!check_cell(index+32) || j == 31)
+                                {
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[6*3], 2*3*3*sizeof(float));
+                                    world_vert_array_index += 18;
+                                }
 
-                                    if (!check_cell(index-1024) || k == 0)
-                                    {
-                                        glDrawArrays(GL_TRIANGLES, 0, 2*3);
-                                    }
+                                if (!check_cell(index-1024) || k == 0)
+                                {
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[0], 2*3*3*sizeof(float));
+                                    world_vert_array_index += 18;
+                                }
 
-                                    if (!check_cell(index+1024) || k == 31)
-                                    {
-                                        glDrawArrays(GL_TRIANGLES, 12, 2*3);
-                                    }
+                                if (!check_cell(index+1024) || k == 31)
+                                {
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[12*3], 2*3*3*sizeof(float));
+                                    world_vert_array_index += 18;
                                 }
                             }
                         }

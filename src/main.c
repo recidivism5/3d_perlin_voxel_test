@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
                 switch (event.key.keysym.sym)
                 {
                     case SDLK_e:
-                    block_break();
+                    //block_break();
                     break;
 
                     case SDLK_w:
