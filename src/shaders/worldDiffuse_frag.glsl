@@ -15,11 +15,19 @@ out vec3 color;
 uniform sampler2D myTextureSampler;
 
 void main(){
-    vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float invlen1 = 2.0f/length(lightPos - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor * invlen1;
-    vec3 ambient = 0.2f * lightColor;
-    color = (ambient + diffuse) * texture(myTextureSampler, UV).rgb;
+    float len1 = length(lightPos - FragPos);
+    if (len1 < 50)
+    {
+        vec3 norm = normalize(Normal);
+        vec3 lightDir = normalize(lightPos - FragPos);
+        float invlen1 = 2.0f/len1;
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = diff * lightColor * invlen1;
+        vec3 ambient = 0.2f * lightColor;
+        color = (ambient + diffuse) * texture(myTextureSampler, UV).rgb;
+    }
+    else
+    {
+        color = vec3(0.0,0.0,0.0);
+    }
 }

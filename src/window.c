@@ -341,6 +341,15 @@ float i_shift = 0;
 
 void world_init()
 {
+    static int resetFlag = 0;
+    if (resetFlag)
+    {
+        free(world);
+        free(world_vert_buffer);
+        free(world_uv_buffer);
+        free(world_normal_buffer);
+    }
+
     world = malloc(32*32*32*world_size*world_size*world_size*sizeof(int));
     world_array_size = 32*32*32*world_size*world_size*world_size;
 
@@ -374,18 +383,23 @@ void world_init()
 
     world_fill_vert_buffer();
 
-    glGenBuffers(1, &world_vertex_buffer_id);
+    if (!resetFlag)
+    {
+        glGenBuffers(1, &world_vertex_buffer_id);
+        glGenBuffers(1, &world_uv_buffer_id);
+        glGenBuffers(1, &world_normal_buffer_id);
+    }
+
     glBindBuffer(GL_ARRAY_BUFFER, world_vertex_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, world_vert_array_size*sizeof(float), world_vert_buffer, GL_STATIC_DRAW);
     
-    glGenBuffers(1, &world_uv_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, world_uv_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, world_uv_array_size*sizeof(float), world_uv_buffer, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &world_normal_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, world_normal_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, world_normal_array_size*sizeof(float), world_normal_buffer, GL_STATIC_DRAW);
     
+    resetFlag = 1;
 }
 
 int check_cell(int index)
@@ -434,7 +448,7 @@ void world_fill_vert_buffer()
     world_vert_array_size = world_total_blocks*3*3*12;
     world_uv_array_size = 2*(world_vert_array_size/3);
     world_normal_array_size = world_vert_array_size;
-    
+
     world_vert_buffer = malloc(world_vert_array_size*sizeof(float));
     world_uv_buffer = malloc(2*(world_vert_array_size/3)*sizeof(float));
     world_normal_buffer = malloc(world_vert_array_size*sizeof(float));
