@@ -147,6 +147,9 @@ int InitOpenGL()
     InitShaderProgram(&shader_program_ids[SHADER_DIFFUSE], "diffuse");
     matrix_ids[SHADER_DIFFUSE] = glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "MVP");
 
+    InitShaderProgram(&shader_program_ids[SHADER_WD], "worldDiffuse");
+    matrix_ids[SHADER_WD] = glGetUniformLocation(shader_program_ids[SHADER_WD], "MVP");
+
     lightPos_id = glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightPos");
     
     glGenBuffers(1, &vertex_buffer_id);
@@ -167,7 +170,8 @@ int InitTextures()
     textures[0] = loadDDS("../res/tex/results/sand_.DDS");
 	
 	texture_ids[0] = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
-    texture_ids[1] = glGetUniformLocation(shader_program_ids[2], "myTextureSampler");
+    texture_ids[1] = glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "myTextureSampler");
+    texture_ids[2] = glGetUniformLocation(shader_program_ids[SHADER_WD], "myTextureSampler");
 
     glGenBuffers(1, &uv_buffers[0]);
     glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
@@ -224,9 +228,17 @@ void friend_draw()
 {
     glUseProgram(shader_program_ids[SHADER_DIFFUSE]);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
+    glUniform1i(texture_ids[1], 0);
+
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
     
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
@@ -291,31 +303,6 @@ int Update()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //JOJ region:
-    glUseProgram(shader_program_ids[SHADER_DIFFUSE]);
-    glUniformMatrix4fv(matrix_ids[2], 1, GL_TRUE, final_matrix_2);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textures[0]);
-    glUniform1i(texture_ids[0], 0);
-    
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_id);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
-
-    static float lightPos[3] = {2.0f,3.0f,5.0f};
-    glUniform3fv(lightPos_id, 1, lightPos);
-    static float lightColor[3] = {1.0f, 0.5f, 0.31f};
-    lightPos[0] = -cam_pos[0];
-    lightPos[1] = -cam_pos[1];
-    lightPos[2] = -cam_pos[2];
-    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "lightColor"), 1, lightColor);
 
     world_draw();
     friend_draw();
@@ -390,10 +377,14 @@ void world_init()
     glGenBuffers(1, &world_vertex_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, world_vertex_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, world_vert_array_size*sizeof(float), world_vert_buffer, GL_STATIC_DRAW);
-    for (int q = 0; q < 50; q++)
-    {
-        printf("\n %f", world_vert_buffer[q]);
-    }
+    
+    glGenBuffers(1, &world_uv_buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, world_uv_buffer_id);
+    glBufferData(GL_ARRAY_BUFFER, world_uv_array_size*sizeof(float), world_uv_buffer, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &world_normal_buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, world_normal_buffer_id);
+    glBufferData(GL_ARRAY_BUFFER, world_normal_array_size*sizeof(float), world_normal_buffer, GL_STATIC_DRAW);
     
 }
 
@@ -411,20 +402,46 @@ int check_cell(int index)
 
 void world_draw()
 {
+    glUseProgram(shader_program_ids[SHADER_WD]);
+
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, world_vertex_buffer_id);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
-    glUniformMatrix4fv(matrix_ids[SHADER_DIFFUSE], 1, GL_TRUE, final_matrix_2);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, world_uv_buffer_id);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, world_normal_buffer_id);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+
+    static float lightPos[3] = {2.0f,3.0f,5.0f};
+    static float lightColor[3] = {0.31f, 0.5f, 1.0f};
+    lightPos[0] = -cam_pos[0];
+    lightPos[1] = -cam_pos[1];
+    lightPos[2] = -cam_pos[2];
+
+    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_WD], "lightColor"), 1, lightColor);
+    glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_WD], "lightPos"), 1, lightPos);
+
+    glUniformMatrix4fv(matrix_ids[SHADER_WD], 1, GL_TRUE, final_matrix_2);
     glDrawArrays(GL_TRIANGLES, 0, world_array_size*3*12);
 }
 
 void world_fill_vert_buffer()
 {
     world_vert_array_size = world_total_blocks*3*3*12;
+    world_uv_array_size = 2*(world_vert_array_size/3);
+    world_normal_array_size = world_vert_array_size;
+    
     world_vert_buffer = malloc(world_vert_array_size*sizeof(float));
+    world_uv_buffer = malloc(2*(world_vert_array_size/3)*sizeof(float));
+    world_normal_buffer = malloc(world_vert_array_size*sizeof(float));
     static long int world_vert_array_index;
     world_vert_array_index = 0;
+    static long int world_uv_array_index;
+    world_uv_array_index = 0;
 
     for (float gi = 0; gi < world_size; gi++)
     {
@@ -453,38 +470,62 @@ void world_fill_vert_buffer()
                                 
                                 if (!check_cell(index-1) || i == 0)
                                 {
-                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[30*3], 2*3*3*sizeof(float));
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[90], 18*sizeof(float));
+                                    memcpy(&world_normal_buffer[world_vert_array_index], &cube_normals[90], 18*sizeof(float));
+                                    memcpy(&world_uv_buffer[world_uv_array_index], &cube_uv_data[60], 12*sizeof(float));
+
                                     world_vert_array_index += 18;
+                                    world_uv_array_index += 12;
                                 }
 
                                 if (!check_cell(index+1) || i == 31)
                                 {
-                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[24*3], 2*3*3*sizeof(float));
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[72], 18*sizeof(float));
+                                    memcpy(&world_normal_buffer[world_vert_array_index], &cube_normals[72], 18*sizeof(float));
+                                    memcpy(&world_uv_buffer[world_uv_array_index], &cube_uv_data[48], 12*sizeof(float));
+
                                     world_vert_array_index += 18;
+                                    world_uv_array_index += 12;
                                 }
 
                                 if (!check_cell(index-32) || j == 0)
                                 {
-                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[18*3], 2*3*3*sizeof(float));
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[54], 18*sizeof(float));
+                                    memcpy(&world_normal_buffer[world_vert_array_index], &cube_normals[54], 18*sizeof(float));
+                                    memcpy(&world_uv_buffer[world_uv_array_index], &cube_uv_data[36], 12*sizeof(float));
+
                                     world_vert_array_index += 18;
+                                    world_uv_array_index += 12;
                                 }
 
                                 if (!check_cell(index+32) || j == 31)
                                 {
-                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[6*3], 2*3*3*sizeof(float));
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[18], 18*sizeof(float));
+                                    memcpy(&world_normal_buffer[world_vert_array_index], &cube_normals[18], 18*sizeof(float));
+                                    memcpy(&world_uv_buffer[world_uv_array_index], &cube_uv_data[12], 12*sizeof(float));
+
                                     world_vert_array_index += 18;
+                                    world_uv_array_index += 12;
                                 }
 
                                 if (!check_cell(index-1024) || k == 0)
                                 {
-                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[0], 2*3*3*sizeof(float));
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[0], 18*sizeof(float));
+                                    memcpy(&world_normal_buffer[world_vert_array_index], &cube_normals[0], 18*sizeof(float));
+                                    memcpy(&world_uv_buffer[world_uv_array_index], &cube_uv_data[0], 12*sizeof(float));
+
                                     world_vert_array_index += 18;
+                                    world_uv_array_index += 12;
                                 }
 
                                 if (!check_cell(index+1024) || k == 31)
                                 {
-                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[12*3], 2*3*3*sizeof(float));
+                                    memcpy(&world_vert_buffer[world_vert_array_index], &v_translated[36], 18*sizeof(float));
+                                    memcpy(&world_normal_buffer[world_vert_array_index], &cube_normals[36], 18*sizeof(float));
+                                    memcpy(&world_uv_buffer[world_uv_array_index], &cube_uv_data[24], 12*sizeof(float));
+
                                     world_vert_array_index += 18;
+                                    world_uv_array_index += 12;
                                 }
                             }
                         }

@@ -20,9 +20,10 @@ GLuint         triNormals_buffer_id;
 GLuint         world_vertex_buffer_id;
 
 #define SHADER_DIFFUSE 2
-GLuint         shader_program_ids[3];
-GLuint         matrix_ids[3];
-GLuint         texture_ids[2];
+#define SHADER_WD 3
+GLuint         shader_program_ids[4];
+GLuint         matrix_ids[4];
+GLuint         texture_ids[3];
 
 GLuint         textures[1];
 GLuint         uv_buffers[1];
