@@ -331,7 +331,7 @@ int perlinTest(float i, float j, float k, float gi, float gj, float gk)
 
 int toggle_full_draw = -1;
 
-int world_size = 2;
+int world_size = 4;
 int* world;
 int world_array_size;
 int world_total_blocks = 0;
@@ -352,6 +352,7 @@ void world_init()
         world_vert_buffer = NULL;
         world_uv_buffer = NULL;
         world_normal_buffer = NULL;
+        world_total_blocks = 0;
     }
 
     world = malloc(32*32*32*world_size*world_size*world_size*sizeof(int));
