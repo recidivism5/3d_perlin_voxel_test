@@ -331,7 +331,7 @@ int perlinTest(float i, float j, float k, float gi, float gj, float gk)
 
 int toggle_full_draw = -1;
 
-int world_size = 1;
+int world_size = 2;
 int* world;
 int world_array_size;
 int world_total_blocks = 0;
@@ -348,6 +348,10 @@ void world_init()
         free(world_vert_buffer);
         free(world_uv_buffer);
         free(world_normal_buffer);
+        world = NULL;
+        world_vert_buffer = NULL;
+        world_uv_buffer = NULL;
+        world_normal_buffer = NULL;
     }
 
     world = malloc(32*32*32*world_size*world_size*world_size*sizeof(int));
@@ -440,7 +444,7 @@ void world_draw()
     glUniform3fv(glGetUniformLocation(shader_program_ids[SHADER_WD], "lightPos"), 1, lightPos);
 
     glUniformMatrix4fv(matrix_ids[SHADER_WD], 1, GL_TRUE, final_matrix_2);
-    glDrawArrays(GL_TRIANGLES, 0, world_array_size*3*12);
+    glDrawArrays(GL_TRIANGLES, 0, world_total_blocks*12);
 }
 
 void world_fill_vert_buffer()
