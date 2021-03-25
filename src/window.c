@@ -1,8 +1,8 @@
 #include "window.h"
 
-float cam_pos[3] = {0.0f, 0.0f, -3.0f};
-float cam_rot_x = 0.0f;
-float cam_rot_y = 0.0f;
+float cam_pos[3] = {0.0f, 0.0f, 0.0f};
+float cam_rot_x = 0.2f;
+float cam_rot_y = -0.5*3.14159;
 
 int mouse_x = 0;
 int mouse_y = 0;
@@ -299,7 +299,7 @@ int Update()
 
     UpdateMatrices();
 
-    glClearColor(0.0f, 0.224f, 0.124f, 1.0f);
+    glClearColor(0.11f, 0.28f, 0.72f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //JOJ region:
@@ -331,7 +331,7 @@ int perlinTest(float i, float j, float k, float gi, float gj, float gk)
 
 int toggle_full_draw = -1;
 
-int world_size = 4;
+int world_size = 1;
 int* world;
 int world_array_size;
 int world_total_blocks = 0;
