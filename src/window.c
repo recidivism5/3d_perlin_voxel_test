@@ -177,7 +177,7 @@ int InitOpenGL()
 int InitTextures()
 {
     textures[0] = loadDDS("../res/tex/dad.DDS");
-    textures[1] = loadDDS("../res/tex/results/fontpow2.DDS");
+    textures[1] = loadDDS("../res/tex/results/minefont.dds");
 	
 	texture_ids[0] = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
     texture_ids[1] = glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "myTextureSampler");
@@ -301,7 +301,12 @@ void gui_draw()
     glBindBuffer(GL_ARRAY_BUFFER, gui_test_uv_buffer_id);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
 
-    glUniformMatrix4fv(glGetUniformLocation(shader_program_ids[SHADER_TUTORIAL5], "MVP"), 1, GL_TRUE, identity44);
+    float sheet_matrix[16];
+    float sheet_trans[16];
+    cmt_matrix(-8.0, 0.0, 0.0, sheet_trans);
+    f_mult_mat44s(final_matrix, sheet_trans, sheet_matrix);
+
+    glUniformMatrix4fv(glGetUniformLocation(shader_program_ids[SHADER_TUTORIAL5], "MVP"), 1, GL_TRUE, sheet_matrix);
 
     glDrawArrays(GL_TRIANGLES, 0, test_element->tri_count * 3);
 
