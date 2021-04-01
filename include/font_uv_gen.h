@@ -1,1 +1,0 @@
-float* font_gen_UVs(char* input, int size);

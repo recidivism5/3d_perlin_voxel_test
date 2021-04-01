@@ -12,6 +12,7 @@
 #include "noise1234.h"
 #include "client.h"
 #include "gl_util.h"
+#include "gui.h"
 
 SDL_Window    *m_window;
 SDL_GLContext  m_context;
@@ -25,7 +26,7 @@ GLuint         shader_program_ids[4];
 GLuint         matrix_ids[4];
 GLuint         texture_ids[3];
 
-GLuint         textures[1];
+GLuint         textures[2];
 GLuint         uv_buffers[1];
 
 float cam_pos[3];

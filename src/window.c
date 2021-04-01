@@ -163,11 +163,17 @@ int InitOpenGL()
     glGenBuffers(1, &triNormals_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cube_normals), cube_normals, GL_STATIC_DRAW);
+
+    test_element = element_init(0.0f, 0.0f, 0.5f, "BRUHET", 6);
+    glGenBuffers(1, &gui_test_uv_buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, gui_test_uv_buffer_id);
+    glBufferData(GL_ARRAY_BUFFER, test_element->UVs_size*sizeof(float), test_element->UVs, GL_STATIC_DRAW);
 }
 
 int InitTextures()
 {
-    textures[0] = loadDDS("../res/tex/results/sand_.DDS");
+    textures[0] = loadDDS("../res/tex/dad.DDS");
+    textures[1] = loadDDS("../res/tex/results/font512.DDS");
 	
 	texture_ids[0] = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
     texture_ids[1] = glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "myTextureSampler");
@@ -229,7 +235,7 @@ void friend_draw()
     glUseProgram(shader_program_ids[SHADER_DIFFUSE]);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textures[0]);
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
     glUniform1i(texture_ids[1], 0);
 
     glEnableVertexAttribArray(0);
@@ -237,7 +243,7 @@ void friend_draw()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, gui_test_uv_buffer_id);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
     
     glEnableVertexAttribArray(2);
@@ -253,24 +259,9 @@ void friend_draw()
     static float friend_rotation_mat[16];
     static float friend_rot_x = 2.0f;
     static float friend_rot_y = 1.5f;
-    if (friend_rot_x < 2*3.14)
-    {
-        friend_rot_x += 0.01f;
-        friend_position[2] += 0.01f;
-    }
-    else
-    {
-        friend_rot_x = 0.0f;
-        friend_position[2] = 0.0f;
-    }
-    if (friend_rot_y < 2*3.14)
-    {
-        friend_rot_y += 0.01f;
-    }
-    else
-    {
-        friend_rot_y = 0.0f;
-    }
+    
+    friend_position[2] = 2.0f;
+
     static float friend_model_to_world[16];
     cmt_matrix(-friend_position[0], -friend_position[1], -friend_position[2], friend_translation_mat);
     rot_matrix(friend_rot_x, friend_rot_y, friend_rotation_mat);
@@ -331,7 +322,7 @@ int perlinTest(float i, float j, float k, float gi, float gj, float gk)
 
 int toggle_full_draw = -1;
 
-int world_size = 1;
+int world_size = 3;
 int* world;
 int world_array_size;
 int world_total_blocks = 0;
@@ -422,6 +413,9 @@ int check_cell(int index)
 void world_draw()
 {
     glUseProgram(shader_program_ids[SHADER_WD]);
+
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
+    glUniform1i(texture_ids[1], 0);
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, world_vertex_buffer_id);
