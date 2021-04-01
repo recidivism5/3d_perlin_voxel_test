@@ -7,6 +7,7 @@ typedef struct UI_Element {
     float* UVs;
     int verts_size;
     int UVs_size;
+    int tri_count;
 } UI_Element;
 
 typedef struct Paper {

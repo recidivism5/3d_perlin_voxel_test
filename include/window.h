@@ -20,6 +20,7 @@ GLuint         vertex_array_id, vertex_buffer_id, color_buffer_id;
 GLuint         triNormals_buffer_id;
 GLuint         world_vertex_buffer_id;
 
+#define SHADER_TUTORIAL5 1
 #define SHADER_DIFFUSE 2
 #define SHADER_WD 3
 GLuint         shader_program_ids[4];

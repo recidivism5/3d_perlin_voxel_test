@@ -38,7 +38,9 @@ UI_Element* element_init(float screen_pos_x, float screen_pos_y, float font_size
     e->verts = malloc(text_length * 18 * sizeof(float));
     e->verts_size = text_length * 18;
     e->UVs_size = text_length * 12;
+    e->tri_count = text_length * 2;
 
+    float og_screen_pos_x = screen_pos_x;
     int step;
     for (int i = 0; i < text_length; i++)
     {
@@ -53,21 +55,28 @@ UI_Element* element_init(float screen_pos_x, float screen_pos_y, float font_size
         e->verts[step+5] = 0;
 
         e->verts[step+6] = screen_pos_x;
-        e->verts[step+7] = screen_pos_y + font_size;
+        e->verts[step+7] = screen_pos_y - font_size;
         e->verts[step+8] = 0;
 
         //tri2
         e->verts[step+9]  = screen_pos_x;
-        e->verts[step+10] = screen_pos_y + font_size;
+        e->verts[step+10] = screen_pos_y - font_size;
         e->verts[step+11] = 0;
 
         e->verts[step+12] = screen_pos_x + font_size;
-        e->verts[step+13] = screen_pos_y + font_size;
+        e->verts[step+13] = screen_pos_y - font_size;
         e->verts[step+14] = 0;
 
         e->verts[step+15] = screen_pos_x + font_size;
         e->verts[step+16] = screen_pos_y;
         e->verts[step+17] = 0;
+
+        screen_pos_x += font_size;
+        if (screen_pos_x > 1.0f)
+        {
+            screen_pos_x = og_screen_pos_x;
+            screen_pos_y -= font_size;
+        }
     }
     return e;
 }
@@ -89,10 +98,5 @@ void gui_init()
     glBufferData(GL_ARRAY_BUFFER, test_element->UVs_size*sizeof(float), test_element->UVs, GL_STATIC_DRAW);
 
     //InitShaderProgram(&font_shader_program_id, "font");
-
-}
-
-void gui_draw()
-{
 
 }

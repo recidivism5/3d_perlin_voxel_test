@@ -164,16 +164,20 @@ int InitOpenGL()
     glBindBuffer(GL_ARRAY_BUFFER, triNormals_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cube_normals), cube_normals, GL_STATIC_DRAW);
 
-    test_element = element_init(0.0f, 0.0f, 0.5f, "BRUHET", 6);
+    test_element = element_init(-1.0f, 1.0f, 0.05f, "GREETINGS, MY NAME IS IAN BRYANT AND I AM CURRENTLY TESTING THE TEXT WRAPPING FEATURE IN THE WORLD'S FIRST 3D ACCELERATED TEXT EDITOR", 133);
     glGenBuffers(1, &gui_test_uv_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, gui_test_uv_buffer_id);
     glBufferData(GL_ARRAY_BUFFER, test_element->UVs_size*sizeof(float), test_element->UVs, GL_STATIC_DRAW);
+    
+    glGenBuffers(1, &gui_test_vert_buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, gui_test_vert_buffer_id);
+    glBufferData(GL_ARRAY_BUFFER, test_element->verts_size*sizeof(float), test_element->verts, GL_STATIC_DRAW);
 }
 
 int InitTextures()
 {
     textures[0] = loadDDS("../res/tex/dad.DDS");
-    textures[1] = loadDDS("../res/tex/results/font512.DDS");
+    textures[1] = loadDDS("../res/tex/results/fontpow2.DDS");
 	
 	texture_ids[0] = glGetUniformLocation(shader_program_ids[1], "myTextureSampler");
     texture_ids[1] = glGetUniformLocation(shader_program_ids[SHADER_DIFFUSE], "myTextureSampler");
@@ -243,7 +247,7 @@ void friend_draw()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, gui_test_uv_buffer_id);
+    glBindBuffer(GL_ARRAY_BUFFER, uv_buffers[0]);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
     
     glEnableVertexAttribArray(2);
@@ -277,7 +281,30 @@ void friend_draw()
     lightPos[2] = -cam_pos[2];
     glDrawArrays(GL_TRIANGLES, 0, 12*3);
 
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
+}
+
+void gui_draw()
+{
+    glUseProgram(shader_program_ids[SHADER_TUTORIAL5]);
+
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    glUniform1i(texture_ids[1], 0);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, gui_test_vert_buffer_id);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, gui_test_uv_buffer_id);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
+
+    glUniformMatrix4fv(glGetUniformLocation(shader_program_ids[SHADER_TUTORIAL5], "MVP"), 1, GL_TRUE, identity44);
+
+    glDrawArrays(GL_TRIANGLES, 0, test_element->tri_count * 3);
+
 }
 
 //per frame
@@ -297,6 +324,7 @@ int Update()
 
     world_draw();
     friend_draw();
+    gui_draw();
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
