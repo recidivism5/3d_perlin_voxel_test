@@ -1,3 +1,5 @@
+//Thank you to tilkinsc for writing this DDS loader: https://gist.github.com/tilkinsc/13191c0c1e5d6b25fbe79bbd2288a673#file-load_dds-c-L19
+
 #include <texture.h>
 
 GLuint loadDDS(const char* path) {
